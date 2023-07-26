@@ -169,7 +169,7 @@ has_controls <- any(grepl("Control", df_key$Treatment))  # used to control evalu
 
 Determine which modalities streams were run  
 ```{r determine_modalities}
-defined_modalities <- c("scrna", "scatac","scrna_unintegrated")
+defined_modalities <- c("scrna", "scatac","scrna_unintegrated","scrna")
 
 # convert method string to vector
 in_method <- strsplit(in_method_string, split = ";")[[1]]

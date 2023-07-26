@@ -212,6 +212,14 @@ if(has_rna_unintegrated){
   }
 }
 
+if(has_snrna){
+  in_rna <- file.path(in_dir)
+  if(!dir.exists(in_dir)){
+    stop(sprintf("Expected RNA input directory [%s] does not exist.", in_rna))
+  }
+}
+
+
 #if(has_atac){
 #  in_atac <- file.path(in_dir, "scatac")
 #  if(!dir.exists(in_atac)){

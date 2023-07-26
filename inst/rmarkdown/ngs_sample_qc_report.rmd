@@ -184,7 +184,7 @@ if(!all(in_method %in% defined_modalities)){
 has_rna <- "scrna" %in% in_method
 has_rna_unintegrated <- "scrna_unintegrated" %in% in_method
 has_atac <- "scatac" %in% in_method
-
+has_snrna <- "snrna" %in% in_method
 ```  
 
 Define and check input folder expectations  
@@ -290,7 +290,10 @@ cat("## scRNA Marker Genes", sep = "\n")
 cat("## Marker Genes", sep = "\n")
 ```{r, child =  system.file("rmarkdown/marker_genes_module_unintegrated.rmd", package = "qcreporter"), eval = has_rna_unintegrated}
 ```
-          
+```{r snrna_marker_gene_tab, results = "asis", eval = has_snrna, echo = FALSE}
+cat("## Marker Genes", sep = "\n")
+```{r, child =  system.file("rmarkdown/snRNA_Module.Rmd", package = "qcreporter"), eval = has_snrna}
+```
 
 ## Session Information   
 

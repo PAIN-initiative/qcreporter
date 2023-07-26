@@ -81,6 +81,8 @@ quiet_library(ggpubr)
 quiet_library(XML)
 quiet_library(RCurl)
 quiet_library(DoubletFinder)
+quiet_library(scRNAseq)
+quiet_library(scuttle)
 stm("Starting NGS Sample Report")
 
 stm(paste(c("\t",paste(names(Sys.info()),Sys.info(),sep = ": ")), collapse = "\n\t"))  

@@ -164,7 +164,7 @@ scrna.combined_prefilter <- Merge_Seurat_List(scrna.list,
                                               add.cell.ids = NULL,
                                               merge.data = TRUE,
                                               project = "sample_id")
-saveRDS(scrna.combined_prefilter,paste0(output_dir,'scrna.combined_prefilter.rds')) # Note this is after removing cells with > 0 % Mitochondrial Transcripts.
+saveRDS(scrna.combined_prefilter,paste0(out_dir,'scrna.combined_prefilter.rds')) # Note this is after removing cells with > 0 % Mitochondrial Transcripts.
 
 # metadata variable
 metadata_prefilter <- scrna.combined_prefilter@meta.data
@@ -270,7 +270,7 @@ so_postfilter <- Merge_Seurat_List(scrna.list,
                                               add.cell.ids = NULL,
                                               merge.data = TRUE,
                                               project = "sample_id")
-saveRDS(so_postfilter,paste0(output_dir,"so_postfilter.rds"))
+saveRDS(so_postfilter,paste0(out_dir,"so_postfilter.rds"))
 metadata_postfilter <- so_postfilter@meta.data
 
 metadata_postfilter_list <- list()
@@ -290,7 +290,7 @@ NCells <- as.integer(unname(postfilter_ncells_df[,1]))
 
 n_cells_df <- as.data.frame(cbind(samples,NCells))
 
-pdf(paste0(output_dir,"postfilter_n_cells.pdf"),onefile=TRUE,height=10,width=15)
+pdf(paste0(out_dir,"postfilter_n_cells.pdf"),onefile=TRUE,height=10,width=15)
 ggplot(data = n_cells_df, aes(x = samples,y = as.integer(NCells),fill = samples)) + geom_bar(stat="identity") + geom_text(aes(label=NCells), position=position_dodge(width=0.9), vjust=-0.25) + ggtitle("Number of Cells") 
 dev.off()
 ```
@@ -319,7 +319,7 @@ pdf(paste0(out_dir,"Genes_Per_PC.pdf"),width=30,height=30)
 VizDimLoadings(so_postfilter, dims = 1:5, reduction = "pca", ncol = 5, balanced = T)
 dev.off()
 
-pdf(paste0(output_dir,"ElbowPlot.pdf"))
+pdf(paste0(out_dir,"ElbowPlot.pdf"))
 ElbowPlot(so_postfilter, reduction = "pca", ndims = 50)
 dev.off()
 so_postfilter <- RunUMAP(so_postfilter, reduction = "pca", dims = 1:20, n.components = 2, n.neighbors = 30,

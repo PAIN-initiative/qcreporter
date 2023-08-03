@@ -326,6 +326,8 @@ so_postfilter <- RunUMAP(so_postfilter, reduction = "pca", dims = 1:20, n.compon
     n.epochs = 200, min.dist = 0.3, learning.rate = 1, spread = 1)
 
 pdf(paste0(out_dir,"UMAP_Unannotated.pdf"))
+FeaturePlot(so_postfilter)
+dev.off()
 
 # Split Seurat Object
 alldata.list <- SplitObject(so_postfilter, split.by = "sample_id")

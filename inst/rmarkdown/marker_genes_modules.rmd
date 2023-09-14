@@ -100,6 +100,12 @@ for (sample in samples) {
   scrna.list[[sample]][["percent.mito"]] <- PercentageFeatureSet(scrna.list[[sample]], pattern = "^MT:|MT-|mt:|mt-") 
   scrna.list[[sample]][["percent.ribo"]] <- PercentageFeatureSet(scrna.list[[sample]], pattern = "^RP[LS]|Rp[LS]")
 }
+
+for (sample in samples) {
+    scrna.list[[sample]] <- RenameCells(scrna.list[[sample]], new.names = paste0(sample,"_", 1:ncol(scrna.list[[sample]])))
+    # Add a prefix to cell names
+}
+
 # merge list of prefiltered Seurat
 scrna.combined_prefilter <- Merge_Seurat_List(scrna.list,
                                               add.cell.ids = NULL,

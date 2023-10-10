@@ -144,7 +144,6 @@ for (sample in samples){
 }
 saveRDS(plots,paste0(output_dir,"Prefilter_Scatter_Plots.RDS"))
 
-qc_cutoff = 3
 mito_cutoff = percent_mito
 ribo_cutoff = percent_ribo
 # Detection based filtering
@@ -285,6 +284,32 @@ so_postfilter <- Merge_Seurat_List(scrna.list,
                                               merge.data = TRUE,
                                               project = "sample_id")
 metadata_postfilter <- so_postfilter@meta.data
+
+
+
+
+metadata_postfilter_list <- list()
+for (sample in samples){
+    metadata_postfilter_list[[sample]] <- scrna.list[[sample]]@meta.data
+}
+# N Cells Postfilter
+n_cells = list()
+for (sample in samples){
+    n_cells[[sample]] <- length(rownames(metadata_postfilter_list[[sample]]))
+}
+
+postfilter_ncells_df <- as.matrix(n_cells)
+
+samples <- rownames(postfilter_ncells_df)
+NCells <- as.integer(unname(postfilter_ncells_df[,1]))
+
+n_cells_df <- as.data.frame(cbind(samples,NCells))
+
+pdf(paste0(output_dir,"postfilter_n_cells.pdf"),onefile=TRUE,height=10,width=15)
+ggplot(data = n_cells_df, aes(x = samples,y = as.integer(NCells),fill = samples)) + geom_bar(stat="identity") + geom_text(aes(label=NCells), position=position_dodge(width=0.9), vjust=-0.25) + ggtitle("Number of Cells") 
+dev.off()
+
+
 ```
 
 ### QC Plots

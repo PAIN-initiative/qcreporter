@@ -106,21 +106,62 @@ scrna.combined_prefilter <- Merge_Seurat_List(scrna.list,
 metadata_prefilter <- scrna.combined_prefilter@meta.data
 # Save Prefilter
 saveRDS(scrna.combined_prefilter, paste0(out_dir, "scrna.combined_prefilter.seurat.", projectName, ".rds"))
-                   
-# Filtered Cells with 3SD of mean nCount and nFeature, percent of mito
-  
-# Filtered cells with 3SD of mean nCount and nFeature, percent of mito
+
+metadata_prefilter_list <- list()
+for (sample in samples){
+    metadata_prefilter_list[[sample]] <- scrna.list[[sample]]@meta.data
+}
+# N Cells Prefilter
+n_cells = list()
+for (sample in samples){
+    n_cells[[sample]] <- length(rownames(metadata_prefilter_list[[sample]]))
+}
+
+prefilter_ncells_df <- as.matrix(n_cells)
+
+samples <- rownames(prefilter_ncells_df)
+NCells <- as.integer(unname(prefilter_ncells_df[,1]))
+
+n_cells_df <- as.data.frame(cbind(samples,NCells))
+
+pdf(paste0(output_dir,"prefilter_n_cells.pdf"),onefile=TRUE,height=10,width=15)
+ggplot(data = n_cells_df, aes(x=samples,y = as.integer(NCells),fill = samples)) + geom_bar(stat="identity") + geom_text(aes(label=NCells), position=position_dodge(width=0.9), vjust=-0.25) + ggtitle("Number of Cells") 
+dev.off()
+
+plots <- list()
+for (sample in samples){
+     
+     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
+     geom_point() + 
+     scale_colour_gradient(low = "gray90", high = "black") +
+     stat_smooth(method=lm) +
+     scale_x_log10() +
+     scale_y_log10() + 
+     theme_classic() +
+     geom_vline(xintercept = 500) +
+     geom_hline(yintercept = 300) +
+     facet_wrap(~sample_id) + ggtitle("Prefilter Mitochondrial Percentage")
+}
+saveRDS(plots,paste0(output_dir,"Prefilter_Scatter_Plots.RDS"))
+
 qc_cutoff = 3
 mito_cutoff = percent_mito
 ribo_cutoff = percent_ribo
-for (sample in samples){
-  mean.nCount <- mean(scrna.list[[sample]]@meta.data$nCount_RNA)
-  sd.nCount <- sd(scrna.list[[sample]]@meta.data$nCount_RNA)
-  mean.nFeature <- mean(scrna.list[[sample]]@meta.data$nFeature_RNA)
-  sd.nFeature <- sd(scrna.list[[sample]]@meta.data$nFeature_RNA)
-  scrna.list[[sample]] <- subset(scrna.list[[sample]], subset = nCount_RNA > mean.nCount - qc_cutoff*sd.nCount & nCount_RNA < mean.nCount + qc_cutoff*sd.nCount & nFeature_RNA > mean.nFeature - qc_cutoff*sd.nFeature & nFeature_RNA < mean.nFeature + qc_cutoff*sd.nFeature & percent.mito < mito_cutoff & percent.ribo < ribo_cutoff)
-}
-  
+# Detection based filtering
+# 300 detected genes and the genes need to be expressesd in atleast 3 cells.
+selected_c <- WhichCells(scrna.combined_prefilter, expression = nFeature_RNA > 200)
+selected_f <- rownames(scrna.combined_prefilter)[Matrix::rowSums(scrna.combined_prefilter) > 3]
+# Apply the filter
+data.filt <- subset(scrna.combined_prefilter, features = selected_f, cells = selected_c)
+
+# Filter Percent Mito & Percent Ribo
+selected_mito <- WhichCells(data.filt, expression = percent_mito < mito_cutoff)
+selected_ribo <- WhichCells(data.filt, expression = percent_ribo > ribo_cutoff)
+
+# and subset the object to only keep those cells
+data.filt <- subset(data.filt, cells = selected_mito)
+data.filt <- subset(data.filt, cells = selected_ribo)
+
 # Compute the relative expression of each gene per cell Use sparse matrix
 # operations, if your dataset is large, doing matrix devisions the regular way
 # will take a very long time.

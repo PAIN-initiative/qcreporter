@@ -69,12 +69,6 @@ for(i in 1:length(samples)){
   sample=samples[i]; sample_id=samples[i];
   scrna.list[[sample]]$sample_id <- sample_id
 }
-
-# add sex name
-for(i in 1:length(samples)){
-  sample=samples[i]; sex=sexes[i];
-  scrna.list[[sample]]$sex <- sex
-}
 ```
 
 [Return to Contents](#rna_seq_sample_top) 

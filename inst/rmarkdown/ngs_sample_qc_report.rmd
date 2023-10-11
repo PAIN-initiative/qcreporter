@@ -9,7 +9,7 @@ output:
   tables: yes
 params:
   experiment_id: NULL
-  cellrangers_dir: NULL            
+  cellbender_dir: NULL            
   outdir: NULL
   refdir: null           
   projectName: NULL     
@@ -92,7 +92,7 @@ if(is.null(params$in_dir)) {
   out_dir <- tempdir()
 } else {
   experiment_id    <- params$experiment_id
-  cellrangers_dir  <- params$cellrangers_dir
+  cellbender_dir  <- params$cellbender_dir
   outdir           <- params$out_dir
   refdir           <- params$refdir
   projectName      <- params$experiment_id  

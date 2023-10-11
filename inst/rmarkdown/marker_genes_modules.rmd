@@ -54,7 +54,7 @@ geneTable <- read.csv(paste0(refdir, "geneAnnotationTable.csv"), header = T, row
 cell_bender_mat = list()
 scrna.list = list()
 for (sample in samples){
-cell_bender_mat[[sample]] <- Read_CellBender_h5_Mat(file_name = paste0(cellbender_dir,sample,"_CellBender_output_file_filtered.h5"))
+cell_bender_mat[[sample]] <- Read_CellBender_h5_Mat(file_name = paste0(cellbender_dir,sample,'/',sample,"_CellBender_output_file_filtered.h5"))
 scrna.list[[sample]] <- CreateSeuratObject(counts = cell_bender_mat[[sample]])
 }
                         

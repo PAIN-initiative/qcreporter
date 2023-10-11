@@ -160,22 +160,6 @@ sample_summary_table <- h5_sample_info %>%
                      names_sort = TRUE) %>%
   mutate(Plot = sprintf("[Plot](#%s)", Variable)) %>% 
   dplyr::select(Variable_name, contains(unique_samples), Plot) # reorder cols by pools first then stats, keep only the clean var name
-gt_table <- sample_summary_table %>% 
-  gt::gt() %>% 
-  gt::fmt_markdown(columns = "Plot") %>% # convert the plot column text to markdown to activate links. these links generated with plots below.
-  gt::cols_width(vars(Variable_name) ~ px(150),
-                 ends_with("Median") ~ px(100),
-                 vars(Plot) ~ px(60)) %>% 
-  gt::tab_options(table.font.size = 11, column_labels.font.size = 12) %>%
-  gt::tab_spanner_delim(delim = "__") %>% 
-  gt::cols_align(align = "right",
-                 columns = c(ends_with("Median"), ends_with("Range"))) %>% 
-  gt::cols_align(align = "center",
-                 columns = vars(Plot)) %>% 
-  gt::cols_label(Variable_name = "Variable")
-gt_table  
-rm(sample_summary_table)
-rm(gt_table)
 
 ```
 <details>

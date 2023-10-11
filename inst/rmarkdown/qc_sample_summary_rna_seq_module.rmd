@@ -1,5 +1,5 @@
 <!-- # Child Rmarkdown Document for 10X genomics cellranger-based scRNA sequencing outputs -->
-<!-- Parent document must have a variable "in_rna" containing metadata-injected H5 files by sample --> 
+<!-- Parent document must have a variable "in_dir" containing metadata-injected H5 files by sample --> 
 <a id="rna_seq_sample_top"></a>
 
 ```{r, include=FALSE} 
@@ -29,12 +29,12 @@ The following metrics summarize the sequencing and alignment by 10x Sample prior
 
 Check Dependencies  
 ```{r scrna_seq_dependency_check, include = FALSE}
-assertthat::assert_that(exists("in_rna"))  
-all_h5 <- list.files(path = in_rna, 
+assertthat::assert_that(exists("in_dir"))  
+all_h5 <- list.files(path = in_dir, 
                                pattern = ".h5$", 
                                full.names = TRUE, recursive = TRUE)
 assertthat::assert_that(length(all_h5) >0, 
-                        msg = sprintf("Did not detect any .h5 files in input RNA directory %s", in_rna))
+                        msg = sprintf("Did not detect any .h5 files in input RNA directory %s", in_dir))
 ```   
 Reading in metadata from h5 files  
 ```{r rna_metadata}

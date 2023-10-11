@@ -70,12 +70,6 @@ for(i in 1:length(samples)){
   scrna.list[[sample]]$sample_id <- sample_id
 }
 
-# add timepoint name
-for(i in 1:length(samples)){
-  sample=samples[i]; timepoint=timepoints[i];
-  scrna.list[[sample]]$timepoint <- timepoint
-}
-
 # add sex name
 for(i in 1:length(samples)){
   sample=samples[i]; sex=sexes[i];

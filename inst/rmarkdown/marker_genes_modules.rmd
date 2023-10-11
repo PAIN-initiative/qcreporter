@@ -112,7 +112,7 @@ NCells <- as.integer(unname(prefilter_ncells_df[,1]))
 
 n_cells_df <- as.data.frame(cbind(samples,NCells))
 
-pdf(paste0(output_dir,"prefilter_n_cells.pdf"),onefile=TRUE,height=10,width=15)
+pdf(paste0(out_dir,"prefilter_n_cells.pdf"),onefile=TRUE,height=10,width=15)
 ggplot(data = n_cells_df, aes(x=samples,y = as.integer(NCells),fill = samples)) + geom_bar(stat="identity") + geom_text(aes(label=NCells), position=position_dodge(width=0.9), vjust=-0.25) + ggtitle("Number of Cells") 
 dev.off()
 
@@ -130,7 +130,7 @@ for (sample in samples){
      geom_hline(yintercept = 300) +
      facet_wrap(~sample_id) + ggtitle("Prefilter Mitochondrial Percentage")
 }
-saveRDS(plots,paste0(output_dir,"Prefilter_Scatter_Plots.RDS"))
+saveRDS(plots,paste0(out_dir,"Prefilter_Scatter_Plots.RDS"))
 
 mito_cutoff = percent_mito
 ribo_cutoff = percent_ribo
@@ -293,7 +293,7 @@ NCells <- as.integer(unname(postfilter_ncells_df[,1]))
 
 n_cells_df <- as.data.frame(cbind(samples,NCells))
 
-pdf(paste0(output_dir,"postfilter_n_cells.pdf"),onefile=TRUE,height=10,width=15)
+pdf(paste0(out_dir,"postfilter_n_cells.pdf"),onefile=TRUE,height=10,width=15)
 ggplot(data = n_cells_df, aes(x = samples,y = as.integer(NCells),fill = samples)) + geom_bar(stat="identity") + geom_text(aes(label=NCells), position=position_dodge(width=0.9), vjust=-0.25) + ggtitle("Number of Cells") 
 dev.off()
 

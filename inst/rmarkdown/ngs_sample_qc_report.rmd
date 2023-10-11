@@ -143,19 +143,9 @@ has_controls <- any(grepl("Control", df_key$Treatment))  # used to control evalu
 
 Determine which modalities streams were run  
 ```{r determine_modalities}
-defined_modalities <- c("scrna", "scatac","scrna_unintegrated","snrna")
-
 # convert method string to vector
 in_method <- strsplit(in_method_string, split = ";")[[1]]
 in_method <- tolower(in_method)
-
-# Logic check input methods
-if(!all(in_method %in% defined_modalities)){
-    unknowns <- setdiff(in_method, defined_modalities)
-    stop(sprintf("One or more input methods are not in defined modalities: '%s'. Defined modalities are: [%s]. Input methods should be passed as a ';'-delimited string, ie 'scrna;scatac;hto'.",
-                    paste(unknowns, collapse = "', '"),
-                    paste(defined_modalities, collapse = ', ')))
-} 
 
 has_rna <- "scrna" %in% in_method
 has_rna_unintegrated <- "scrna_unintegrated" %in% in_method

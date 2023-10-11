@@ -142,8 +142,8 @@ selected_f <- rownames(scrna.combined_prefilter)[Matrix::rowSums(scrna.combined_
 data.filt <- subset(scrna.combined_prefilter, features = selected_f, cells = selected_c)
 
 # Filter Percent Mito & Percent Ribo
-selected_mito <- WhichCells(data.filt, expression = percent_mito < mito_cutoff)
-selected_ribo <- WhichCells(data.filt, expression = percent_ribo > ribo_cutoff)
+selected_mito <- WhichCells(data.filt, expression = percent.mito < mito_cutoff)
+selected_ribo <- WhichCells(data.filt, expression = percent.ribo > ribo_cutoff)
 
 # and subset the object to only keep those cells
 data.filt <- subset(data.filt, cells = selected_mito)

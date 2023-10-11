@@ -84,23 +84,30 @@ stm(paste(c("\t",paste(names(Sys.info()),Sys.info(),sep = ": ")), collapse = "\n
 Argument Parsing  
 ```{r parse_arguments}
 # give input directory rna-specific name 
-experiment_id    <- params$experiment_id
-cellbender_dir  <- params$cellbender_dir
-outdir           <- params$out_dir
-refdir           <- params$refdir
-projectName      <- params$experiment_id  
-in_method_string <- params$in_method
-in_dir           <- params$in_dir  
-in_key           <- params$in_key
-resolution       <- params$resolution
-out_dir          <- params$out_dir
-percent_mito     <- params$percent_mito
-percent_ribo     <- params$percent_ribo
-filter_MALAT     <- params$filter_MALAT
-filter_MITO      <- params$filter_MITO
-filter_RIBO      <- params$filter_RIBO
-species          <- params$species
-
+if(is.null(params$in_dir)) {
+  experiment_id <- "X070"
+  in_dir <- system.file("extdata/X070", package = "qcreporter")
+  in_key <- system.file("extdata/example_sample_key_X070.csv", package = "qcreporter")
+  in_method_string <- "scrna;scatac"
+  out_dir <- tempdir()
+} else {
+  experiment_id    <- params$experiment_id
+  cellbender_dir  <- params$cellbender_dir
+  outdir           <- params$out_dir
+  refdir           <- params$refdir
+  projectName      <- params$experiment_id  
+  in_method_string <- params$in_method
+  in_dir           <- params$in_dir  
+  in_key           <- params$in_key
+  resolution       <- params$resolution
+  out_dir          <- params$out_dir
+  percent_mito     <- params$percent_mito
+  percent_ribo     <- params$percent_ribo
+  filter_MALAT     <- params$filter_MALAT
+  filter_MITO      <- params$filter_MITO
+  filter_RIBO      <- params$filter_RIBO
+  species          <- params$species
+}
 
 stm(paste0("IN Experiment        : ", experiment_id))
 stm(paste0("IN Method       : ", in_method_string))
@@ -143,9 +150,19 @@ has_controls <- any(grepl("Control", df_key$Treatment))  # used to control evalu
 
 Determine which modalities streams were run  
 ```{r determine_modalities}
+defined_modalities <- c("scrna", "scatac","scrna_unintegrated","snrna")
+
 # convert method string to vector
 in_method <- strsplit(in_method_string, split = ";")[[1]]
 in_method <- tolower(in_method)
+
+# Logic check input methods
+if(!all(in_method %in% defined_modalities)){
+    unknowns <- setdiff(in_method, defined_modalities)
+    stop(sprintf("One or more input methods are not in defined modalities: '%s'. Defined modalities are: [%s]. Input methods should be passed as a ';'-delimited string, ie 'scrna;scatac;hto'.",
+                    paste(unknowns, collapse = "', '"),
+                    paste(defined_modalities, collapse = ', ')))
+} 
 
 has_rna <- "scrna" %in% in_method
 has_rna_unintegrated <- "scrna_unintegrated" %in% in_method
@@ -153,11 +170,60 @@ has_atac <- "scatac" %in% in_method
 has_snrna <- "snrna" %in% in_method
 ```  
 
+Define and check input folder expectations  
+```{r define_input_folders}
+#if(has_rna){
+#  in_rna <- file.path(in_dir, "scrna")
+#  if(!dir.exists(in_rna)){
+#    stop(sprintf("Expected RNA input directory [%s] does not exist.", in_rna))
+#  }
+#}
+
+if(has_rna){
+  in_rna <- file.path(in_dir)
+  if(!dir.exists(in_rna)){
+    stop(sprintf("Expected RNA input directory [%s] does not exist.", in_rna))
+  }
+}
+            
+if(has_rna_unintegrated){
+  in_rna <- file.path(in_dir)
+  if(!dir.exists(in_dir)){
+    stop(sprintf("Expected RNA input directory [%s] does not exist.", in_rna))
+  }
+}
+
+if(has_snrna){
+  in_rna <- file.path(in_dir)
+  if(!dir.exists(in_dir)){
+    stop(sprintf("Expected RNA input directory [%s] does not exist.", in_rna))
+  }
+}
+
+
+#if(has_atac){
+#  in_atac <- file.path(in_dir, "scatac")
+#  if(!dir.exists(in_atac)){
+#    stop(sprintf("Expected ATAC input directory [%s] does not exist.", in_atac))
+#  }
+#}
+
+if(has_atac){
+  in_atac <- file.path(in_dir)
+  if(!dir.exists(in_atac)){
+    stop(sprintf("Expected ATAC input directory [%s] does not exist.", in_atac))
+  }
+}
+
+```
+
+</details> 
+
 ### Sample Information    
 ```{r sampleinfo, include = TRUE}
 stm("Constructing Sample Information table")
 
-all_h5 <- list.files(path = file.path(in_dir), 
+all_h5 <- list.files(path = file.path(in_rna), 
                              pattern = "h5$", 
                              full.names = TRUE, 
                              recursive = TRUE)
@@ -168,7 +234,7 @@ meta <- dplyr::bind_rows(meta_list)
 setDT(meta)
 
 
-h5_filenames <- list.files(path = file.path(in_dir),
+h5_filenames <- list.files(path = file.path(in_rna),
                                             pattern = ".h5$", 
                                             full.names = FALSE, 
                                             recursive = TRUE)

@@ -163,60 +163,11 @@ has_atac <- "scatac" %in% in_method
 has_snrna <- "snrna" %in% in_method
 ```  
 
-Define and check input folder expectations  
-```{r define_input_folders}
-#if(has_rna){
-#  in_rna <- file.path(in_dir, "scrna")
-#  if(!dir.exists(in_rna)){
-#    stop(sprintf("Expected RNA input directory [%s] does not exist.", in_rna))
-#  }
-#}
-
-if(has_rna){
-  in_rna <- file.path(in_dir)
-  if(!dir.exists(in_rna)){
-    stop(sprintf("Expected RNA input directory [%s] does not exist.", in_rna))
-  }
-}
-            
-if(has_rna_unintegrated){
-  in_rna <- file.path(in_dir)
-  if(!dir.exists(in_dir)){
-    stop(sprintf("Expected RNA input directory [%s] does not exist.", in_rna))
-  }
-}
-
-if(has_snrna){
-  in_rna <- file.path(in_dir)
-  if(!dir.exists(in_dir)){
-    stop(sprintf("Expected RNA input directory [%s] does not exist.", in_rna))
-  }
-}
-
-
-#if(has_atac){
-#  in_atac <- file.path(in_dir, "scatac")
-#  if(!dir.exists(in_atac)){
-#    stop(sprintf("Expected ATAC input directory [%s] does not exist.", in_atac))
-#  }
-#}
-
-if(has_atac){
-  in_atac <- file.path(in_dir)
-  if(!dir.exists(in_atac)){
-    stop(sprintf("Expected ATAC input directory [%s] does not exist.", in_atac))
-  }
-}
-
-```
-
-</details> 
-
 ### Sample Information    
 ```{r sampleinfo, include = TRUE}
 stm("Constructing Sample Information table")
 
-all_h5 <- list.files(path = file.path(in_rna), 
+all_h5 <- list.files(path = file.path(in_dir), 
                              pattern = "h5$", 
                              full.names = TRUE, 
                              recursive = TRUE)
@@ -227,7 +178,7 @@ meta <- dplyr::bind_rows(meta_list)
 setDT(meta)
 
 
-h5_filenames <- list.files(path = file.path(in_rna),
+h5_filenames <- list.files(path = file.path(in_dir),
                                             pattern = ".h5$", 
                                             full.names = FALSE, 
                                             recursive = TRUE)

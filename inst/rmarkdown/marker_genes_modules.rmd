@@ -148,6 +148,8 @@ selected_ribo <- WhichCells(data.filt, expression = percent.ribo <= ribo_cutoff)
 # and subset the object to only keep those cells
 data.filt <- subset(data.filt, cells = selected_mito)
 data.filt <- subset(data.filt, cells = selected_ribo)
+# split seurat object
+scrna.list <- SplitObject(data.filt , split.by = "sample_id")
 
 # Compute the relative expression of each gene per cell Use sparse matrix
 # operations, if your dataset is large, doing matrix devisions the regular way

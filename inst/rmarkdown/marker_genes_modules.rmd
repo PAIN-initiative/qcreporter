@@ -1,4 +1,4 @@
-<!-- # Child Rmarkdown Document for Cluster Annotation -->
+f<!-- # Child Rmarkdown Document for Cluster Annotation -->
 <!-- Parent document must have a variable "in_rna" containing metadata-injected H5 files by sample --> 
 <a id="rna_seq_cluster_annotation_top"></a>
 
@@ -43,7 +43,6 @@ colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')
 markers <- MarkerGenes$'marker_gene'
 
 # read in gene name table
-geneTable <- read.csv(paste0(refdir, "geneAnnotationTable.csv"), header = T, row.names = 1)
 ``` 
   
   
@@ -503,7 +502,6 @@ scrna.markers <- FindAllMarkers(scrna.combined,verbose=FALSE,test.use = "MAST",m
                                 logfc.threshold = 0, min.pct = 0, ebayes = FALSE)
 
 names(scrna.markers)[names(scrna.markers) == "gene"] <- "geneSymbol"
-scrna.markers$geneID <- geneTable$geneID[match(scrna.markers$geneSymbol, geneTable$geneSymbol)]
 write.table(scrna.markers, paste0(out_dir, "FindAllMarkers.clusters.xls"), sep = "\t", row.names = F)
 # top 10
 top10<- scrna.markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_log2FC)

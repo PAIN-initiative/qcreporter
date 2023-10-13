@@ -618,7 +618,7 @@ for (marker in markers){
 dev.off()
   
 pdf(paste0(out_dir, "combined.dotplot.geneSymbol.pdf"), width = 30, height = 10)
-p1 <- DotPlot(scrna.combined, features = markers, x_lab_rotate = TRUE, colors_use = "blue") + scale_x_discrete(breaks= markers)
+p1 <- scCustomize::DotPlot_scCustom(scrna.combined, features = markers, x_lab_rotate = TRUE) + scale_x_discrete(breaks= markers)
 print(p1)
 dev.off()
       

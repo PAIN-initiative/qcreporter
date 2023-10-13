@@ -533,9 +533,7 @@ scrna.markers_sig = scrna.markers_sig %>% dplyr::select(cluster, geneSymbol, p_v
 final_df <- data.frame(           "cluster"    = scrna.markers_sig$cluster,
                                   "gene"       = scrna.markers_sig$geneSymbol,
                                   "p_val"      = scrna.markers_sig$p_val,
-                                  "avg_log2FC" = scrna.markers_sig$avg_log2FC,FindAllMarkers(scrna.combined,verbose=FALSE,test.use = "MAST",min.cells.feature = 0, min.cells.group = 0,
-                                logfc.threshold = 0, min.pct = 0, ebayes = FALSE)
-
+                                  "avg_log2FC" = scrna.markers_sig$avg_log2FC,
                                   "p_val_adj"  = scrna.markers_sig$p_val_adj,
                                   "pct.1"      = scrna.markers_sig$pct.1,
                                   "pct.2"      = scrna.markers_sig$pct.2,

@@ -377,8 +377,6 @@ saveRDS(alldata.int,paste0(out_dir,"snRNA_postfilter_int_cl.rds"))
 # Set the identity as louvain with resolution 0.5
 meta <- alldata.int@meta.data
 Idents(alldata.int) <- resolution
-
-alldata.int <- SetIdent(alldata.int, value = sel.clust)
 # Find Markers
 DefaultAssay(alldata.int) <- "RNA"
 markers_genes <- FindAllMarkers(alldata.int, log2FC.threshold = 0.2, test.use = "wilcox",

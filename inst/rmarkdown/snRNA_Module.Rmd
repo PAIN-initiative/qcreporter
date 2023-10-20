@@ -370,11 +370,6 @@ pdf(paste0(in_dir,"resolution_snn_res_res_2.pdf"))
 res_2
 dev.off()
 
-suppressPackageStartupMessages(library(clustree))
-pdf(paste0(in_dir,"clustree_resolutions.pdf"))
-clustree(alldata.int@meta.data, prefix = "CCA_snn_res.")
-dev.off()
-
 # Save Data
 saveRDS(alldata.int,paste0(in_dir,"snRNA_postfilter_int_cl.rds"))
 ```

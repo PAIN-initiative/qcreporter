@@ -345,7 +345,7 @@ saveRDS(alldata.int,paste0(out_dir,"snRNA_postfilter_int.rds"))
 ### Plot CCA
 # Plotting
 p2 <- DimPlot_scCustom(alldata.int, reduction = "umap", group.by = "sample_id") + ggtitle("UMAP CCA")
-pdf(paste0(in_dir,"UMAP_CCA.pdf"))
+pdf(paste0(out_dir,"UMAP_CCA.pdf"))
 p2 + coord_fixed()
 dev.off()
 ``` 
@@ -360,18 +360,18 @@ alldata.int <- FindClusters(alldata.int, graph.name = "CCA_snn", resolution = se
 res_0.5 <-  scCustomize::DimPlot_scCustom(alldata.int, group.by = "CCA_snn_res.0.5", label = TRUE) + ggtitle("louvain_0.5")
 res_1   <- scCustomize::DimPlot_scCustom(alldata.int, group.by = "CCA_snn_res.1", label = TRUE) + ggtitle("louvain_1")
 res_2   <- scCustomize::DimPlot_scCustom(alldata.int, group.by = "CCA_snn_res.2", label = TRUE) + ggtitle("louvain_2")
-pdf(paste0(in_dir,"resolution_snn_res_0.5.pdf"))
+pdf(paste0(out_dir,"resolution_snn_res_0.5.pdf"))
 res_0.5
 dev.off()
-pdf(paste0(in_dir,"resolution_snn_res_res_1.pdf"))
+pdf(paste0(out_dir,"resolution_snn_res_res_1.pdf"))
 res_1
 dev.off()
-pdf(paste0(in_dir,"resolution_snn_res_res_2.pdf"))
+pdf(paste0(out_dir,"resolution_snn_res_res_2.pdf"))
 res_2
 dev.off()
 
 # Save Data
-saveRDS(alldata.int,paste0(in_dir,"snRNA_postfilter_int_cl.rds"))
+saveRDS(alldata.int,paste0(out_dir,"snRNA_postfilter_int_cl.rds"))
 ```
 ```{r echo=FALSE,message=FALSE}
 # Set the identity as louvain with resolution 0.5

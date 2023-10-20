@@ -41,6 +41,9 @@ treatments <- metatable$Treatment
 MarkerGenes <- ss$MarkerGenes
 colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')
 markers <- MarkerGenes$'marker_gene'
+if (species == "Homo Sapiens"){
+    markers <- toupper(markers)
+}
 ```
 
 ```{r pre_processing,echo=FALSE,message=FALSE}

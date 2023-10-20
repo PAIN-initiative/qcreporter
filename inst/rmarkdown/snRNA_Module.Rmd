@@ -336,7 +336,7 @@ alldata.int <- RunPCA(alldata.int, npcs = 30, verbose = FALSE)
 alldata.int <- RunUMAP(alldata.int, dims = 1:30)
 
 
-alldata.harmony <- harmony::RunHarmony(alldata, group.by.vars = "sample_id", reduction = "pca",
+alldata.harmony <- harmony::RunHarmony(alldata.int, group.by.vars = "sample_id", reduction = "pca",
     dims.use = 1:50, assay.use = "RNA")
 
 # Here we use all PCs computed from Harmony for UMAP calculation

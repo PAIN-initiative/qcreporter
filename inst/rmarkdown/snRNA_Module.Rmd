@@ -44,6 +44,9 @@ markers <- MarkerGenes$'marker_gene'
 if (species == "Homo Sapiens"){
     markers <- toupper(markers)
 }
+
+# read in gene name table
+geneTable <- read.csv(paste0(refdir, "geneAnnotationTable.csv"), header = T, row.names = 1)
 ```
 
 ```{r pre_processing,echo=FALSE,message=FALSE}

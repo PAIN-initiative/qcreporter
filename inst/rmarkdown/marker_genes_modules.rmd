@@ -177,7 +177,7 @@ for (sample in samples){
     # Filter MALAT1
 if (filter_MALAT == TRUE){
   for (sample in samples){
-  scrna.list[[sample]] <- scrna.list[[sample]][!grepl("MALAT1", rownames(scrna.list[[sample]])), ]
+  scrna.list[[sample]] <- scrna.list[[sample]][!grepl("MALAT1:Malat1", rownames(scrna.list[[sample]])), ]
   }
 }
 # Filter Mitocondrial

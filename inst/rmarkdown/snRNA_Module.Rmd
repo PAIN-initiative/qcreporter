@@ -389,6 +389,7 @@ markers_genes <- FindAllMarkers(alldata.int, log2FC.threshold = 0.2, test.use = 
     min.pct = 0.1, min.diff.pct = 0.2, only.pos = TRUE, max.cells.per.ident = 50,
     assay = "RNA")
 names(markers_genes)[names(markers_genes) == "gene"] <- "geneSymbol"
+markers_genes$geneID <- geneTable$geneID[match(markers_genes$geneSymbol, geneTable$geneSymbol)]
 write.table(markers_genes, paste0(out_dir, "FindAllMarkers.clusters.xls"), sep = "\t", row.names = F)
 # top 10
 top10<- markers_genes %>% group_by(cluster) %>% top_n(n = 10, wt = avg_log2FC)

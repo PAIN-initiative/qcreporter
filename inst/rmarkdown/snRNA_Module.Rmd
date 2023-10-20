@@ -375,7 +375,8 @@ saveRDS(alldata.int,paste0(out_dir,"snRNA_postfilter_int_cl.rds"))
 ```
 ```{r echo=FALSE,message=FALSE}
 # Set the identity as louvain with resolution 0.5
-sel.clust = "CCA_snn_res.0.5"
+meta <- alldata.int@meta.data
+Idents(alldata.int) <- resolution
 
 alldata.int <- SetIdent(alldata.int, value = sel.clust)
 # Find Markers

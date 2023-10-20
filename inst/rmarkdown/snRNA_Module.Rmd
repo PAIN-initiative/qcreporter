@@ -336,29 +336,17 @@ alldata.int <- RunPCA(alldata.int, npcs = 30, verbose = FALSE)
 alldata.int <- RunUMAP(alldata.int, dims = 1:30)
 
 
-alldata.harmony <- harmony::RunHarmony(alldata.int, group.by.vars = "sample_id", reduction = "pca",
-    dims.use = 1:50, assay.use = "RNA")
-
-# Here we use all PCs computed from Harmony for UMAP calculation
-alldata.int[["harmony"]] <- alldata.harmony[["harmony"]]
-alldata.int <- RunUMAP(alldata.int, dims = 1:50, reduction = "harmony", reduction.name = "umap_harmony")
-
 saveRDS(alldata.int,paste0(out_dir,"snRNA_postfilter_int.rds"))
 
 ``` 
 [Return to Contents](#snrna_seq_sample_top) 
 
 ```{r echo=FALSE,message=FALSE}
-### Plot Harmony & CCA
+### Plot CCA
 # Plotting
 p2 <- DimPlot_scCustom(alldata.int, reduction = "umap", group.by = "sample_id") + ggtitle("UMAP CCA")
 pdf(paste0(in_dir,"UMAP_CCA.pdf"))
 p2 + coord_fixed()
-dev.off()
-p3 <- DimPlot_scCustom(alldata.int, reduction = "umap_harmony", group.by = "sample_id") +
-    ggtitle("UMAP Harmony")
-pdf(paste0(in_dir,"UMAP_Harmony.pdf"))
-p3 + coord_fixed()
 dev.off()
 ``` 
 [Return to Contents](#snrna_seq_sample_top) 

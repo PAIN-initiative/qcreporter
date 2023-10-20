@@ -431,20 +431,20 @@ dev.off()
 
 <a  id="mgt"></a> 
 ```{r echo=FALSE,message=FALSE}
-scrna.markers_sig <- scrna.markers[scrna.markers$p_val_adj <= 0.05,]            
+markers_genes_sig <- markers_genes[markers_genes$p_val_adj <= 0.05,]            
 # Create Interactive Table
 if (species == "Mus musculus"){
-tibble::as_tibble(unique(scrna.markers_sig)) %>% dplyr::arrange(p_val_adj) -> scrna.markers_sig
-scrna.markers_sig = scrna.markers_sig %>% dplyr::select(cluster, geneSymbol, p_val, avg_log2FC,
+tibble::as_tibble(unique(markers_genes_sig)) %>% dplyr::arrange(p_val_adj) -> markers_genes_sig
+markers_genes_sig = markers_genes_sig %>% dplyr::select(cluster, geneSymbol, p_val, avg_log2FC,
                                              p_val_adj,pct.1,pct.2,geneID)
-final_df <- data.frame(           "cluster"    = scrna.markers_sig$cluster,
-                                  "gene"       = scrna.markers_sig$geneSymbol,
-                                  "p_val"      = scrna.markers_sig$p_val,
-                                  "avg_log2FC" = scrna.markers_sig$avg_log2FC,
-                                  "p_val_adj"  = scrna.markers_sig$p_val_adj,
-                                  "pct.1"      = scrna.markers_sig$pct.1,
-                                  "pct.2"      = scrna.markers_sig$pct.2,
-                                  "MGI_ID" = paste0("<a  href='https://www.informatics.jax.org/quicksearch/summary?queryType=exactPhrase&query=",scrna.markers_sig$geneID,"'>", scrna.markers_sig$geneID,"</a>"))
+final_df <- data.frame(           "cluster"    = markers_genes_sig$cluster,
+                                  "gene"       = markers_genes_sig$geneSymbol,
+                                  "p_val"      = markers_genes_sig$p_val,
+                                  "avg_log2FC" = markers_genes_sig$avg_log2FC,
+                                  "p_val_adj"  = markers_genes_sig$p_val_adj,
+                                  "pct.1"      = markers_genes_sig$pct.1,
+                                  "pct.2"      = markers_genes_sig$pct.2,
+                                  "MGI_ID" = paste0("<a  href='https://www.informatics.jax.org/quicksearch/summary?queryType=exactPhrase&query=",markers_genes_sig$geneID,"'>", markers_genes_sig$geneID,"</a>"))
 
 DT::datatable(final_df,class = 'cell-border stripe',rownames=F,filter='top',
               editable = TRUE, extensions = 'Buttons', options = list(
@@ -453,17 +453,17 @@ DT::datatable(final_df,class = 'cell-border stripe',rownames=F,filter='top',
               ),escape = FALSE)
 }
 if (species == "Drosophila Melanogaster"){
-as_tibble(unique(scrna.markers_sig)) %>% arrange(p_val_adj) -> scrna.markers_sig
-scrna.markers_sig = scrna.markers_sig %>% dplyr::select(cluster, geneSymbol, p_val, avg_log2FC,
+as_tibble(unique(markers_genes_sig)) %>% arrange(p_val_adj) -> markers_genes_sig
+markers_genes_sig = markers_genes_sig %>% dplyr::select(cluster, geneSymbol, p_val, avg_log2FC,
                                              p_val_adj,pct.1,pct.2,geneID)
-final_df <- data.frame(           "cluster"    = scrna.markers_sig$cluster,
-                                  "gene"       = scrna.markers_sig$geneSymbol,
-                                  "p_val"      = scrna.markers_sig$p_val,
-                                  "avg_log2FC" = scrna.markers_sig$avg_log2FC,
-                                  "p_val_adj"  = scrna.markers_sig$p_val_adj,
-                                  "pct.1"      = scrna.markers_sig$pct.1,
-                                  "pct.2"      = scrna.markers_sig$pct.2,
-                                  "FlyBase_ID" = paste0("<a  href='https://flybase.org/reports/",scrna.markers_sig$geneID,"'>", scrna.markers_sig$geneID,"</a>"))
+final_df <- data.frame(           "cluster"    = markers_genes_sig$cluster,
+                                  "gene"       = markers_genes_sig$geneSymbol,
+                                  "p_val"      = markers_genes_sig$p_val,
+                                  "avg_log2FC" = markers_genes_sig$avg_log2FC,
+                                  "p_val_adj"  = markers_genes_sig$p_val_adj,
+                                  "pct.1"      = markers_genes_sig$pct.1,
+                                  "pct.2"      = markers_genes_sig$pct.2,
+                                  "FlyBase_ID" = paste0("<a  href='https://flybase.org/reports/",markers_genes_sig$geneID,"'>", markers_genes_sig$geneID,"</a>"))
 
 DT::datatable(final_df,class = 'cell-border stripe',rownames=F,filter='top',
               editable = TRUE, extensions = 'Buttons', options = list(
@@ -474,17 +474,17 @@ DT::datatable(final_df,class = 'cell-border stripe',rownames=F,filter='top',
             
 if (species == "Homo Sapiens"){
 # Create Interactive Table
-tibble::as_tibble(unique(scrna.markers_sig)) %>% dplyr::arrange(p_val_adj) -> scrna.markers_sig
-scrna.markers_sig = scrna.markers_sig %>% dplyr::select(cluster, geneSymbol, p_val, avg_log2FC,
+tibble::as_tibble(unique(markers_genes_sig)) %>% dplyr::arrange(p_val_adj) -> markers_genes_sig
+markers_genes_sig = markers_genes_sig %>% dplyr::select(cluster, geneSymbol, p_val, avg_log2FC,
                                              p_val_adj,pct.1,pct.2,geneID)
-final_df <- data.frame(           "cluster"    = scrna.markers_sig$cluster,
-                                  "gene"       = scrna.markers_sig$geneSymbol,
-                                  "p_val"      = scrna.markers_sig$p_val,
-                                  "avg_log2FC" = scrna.markers_sig$avg_log2FC,
-                                  "p_val_adj"  = scrna.markers_sig$p_val_adj,
-                                  "pct.1"      = scrna.markers_sig$pct.1,
-                                  "pct.2"      = scrna.markers_sig$pct.2,
-                                  "GeneCards" = paste0("<a  href='https://www.genecards.org/Search/Keyword?queryString=",scrna.markers_sig$geneID,"'>", scrna.markers_sig$geneID,"</a>"))
+final_df <- data.frame(           "cluster"    = markers_genes_sig$cluster,
+                                  "gene"       = markers_genes_sig$geneSymbol,
+                                  "p_val"      = markers_genes_sig$p_val,
+                                  "avg_log2FC" = markers_genes_sig$avg_log2FC,
+                                  "p_val_adj"  = markers_genes_sig$p_val_adj,
+                                  "pct.1"      = markers_genes_sig$pct.1,
+                                  "pct.2"      = markers_genes_sig$pct.2,
+                                  "GeneCards" = paste0("<a  href='https://www.genecards.org/Search/Keyword?queryString=",markers_genes_sig$geneID,"'>", markers_genes_sig$geneID,"</a>"))
 
 DT::datatable(final_df,class = 'cell-border stripe',rownames=F,filter='top',
               editable = TRUE, extensions = 'Buttons', options = list(

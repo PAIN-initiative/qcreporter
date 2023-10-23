@@ -12,7 +12,6 @@ option_list <- list(
               help = "Input batch pipeline modality string",
               metavar = "character"),
   make_option(opt_str = c("-i","--in_dir"),
-              type = "character",
               default = NULL,
               help = "Input directory containing h5 and json files",
               metavar = "character"),
@@ -75,7 +74,12 @@ option_list <- list(
               type = "character",
               default = FALSE,
               help = "Filter Ribo Genes TRUE/FALSE",
-              metavar = "character"))
+              metavar = "character"),
+  make_option(opt_str = c("-p","--alg"),
+              type = "integer",
+              default = 1,
+              help = "Cluster Algorithm",
+              metavar = "integer"))
 
 opt_parser <- OptionParser(option_list = option_list)
 
@@ -115,7 +119,8 @@ rmarkdown::render(
                   percent_ribo     = args$percent_ribo,
                   filter_MALAT     = args$filter_MALAT,
                   filter_MITO      = args$filter_MITO,
-                  filter_RIBO      = args$filter_RIBO),
+                  filter_RIBO      = args$filter_RIBO,
+                  alg              = args$alg),
   output_file = args$out_html,
   quiet = TRUE
 )

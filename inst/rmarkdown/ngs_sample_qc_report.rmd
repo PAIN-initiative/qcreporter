@@ -24,6 +24,7 @@ params:
   filter_MITO: NULL
   filter_RIBO: NULL
   species: NULL
+  alg: NULL
   ngs_report_version: 1.0.0
 ---  
 
@@ -108,6 +109,7 @@ if(is.null(params$in_dir)) {
   filter_MITO      <- params$filter_MITO
   filter_RIBO      <- params$filter_RIBO
   species          <- params$species
+  alg              <- params$alg
 }
 
 stm(paste0("IN Experiment        : ", experiment_id))

@@ -361,7 +361,7 @@ dev.off()
 # Clustering
 alldata.int <- FindNeighbors(alldata.int, dims = 1:30, k.param = 60, prune.SNN = 1/15)
 # Clustering with louvain (algorithm 1)
-alldata.int <- FindClusters(alldata.int, graph.name = "CCA_snn", resolution = seq(0.5,3,by=0.1),verbose=FALSE)
+alldata.int <- FindClusters(alldata.int, graph.name = "CCA_snn", resolution = seq(0.5,3,by=0.1),algorithm = alg,verbose=FALSE)
 
 res_0.5 <-  scCustomize::DimPlot_scCustom(alldata.int, group.by = "CCA_snn_res.0.5", label = TRUE) + ggtitle("louvain_0.5")
 res_1   <- scCustomize::DimPlot_scCustom(alldata.int, group.by = "CCA_snn_res.1", label = TRUE) + ggtitle("louvain_1")

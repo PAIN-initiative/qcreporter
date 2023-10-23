@@ -75,7 +75,7 @@ option_list <- list(
               default = FALSE,
               help = "Filter Ribo Genes TRUE/FALSE",
               metavar = "character"),
-  make_option(opt_str = c("-n","--alg"),
+  make_option(opt_str = c("-r","--alg"),
               type = "integer",
               default = 1,
               help = "Cluster Algorithm",

@@ -425,7 +425,7 @@ rm(scrna.anchors)
 # Perform an integrated analysis
 DefaultAssay(scrna.combined) <- "integrated"
 scrna.combined <- ScaleData(scrna.combined, verbose = FALSE)
-scrna.combined <- RunPCA(scrna.combined, npcs = 15, verbose = FALSE)
+scrna.combined <- RunPCA(scrna.combined, npcs = 30, verbose = FALSE)
            
 ```
 <a  id="elbow_plot"></a> 

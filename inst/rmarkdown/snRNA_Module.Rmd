@@ -107,8 +107,8 @@ data.filt <- subset(snrna.combined_prefilter, features = selected_f, cells = sel
 # Mito Filter
 selected_mito <- WhichCells(data.filt, expression = percent.mito == 0)
 data.filt <- subset(data.filt, cells = selected_mito)
-dim(data.filt)
-table(data.filt$orig.ident)
+#dim(data.filt)
+#table(data.filt$orig.ident)
 
 # Split Seurat Object
 snrna.list <- SplitObject(data.filt, split.by = "sample_id")

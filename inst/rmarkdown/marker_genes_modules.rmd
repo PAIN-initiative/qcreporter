@@ -423,7 +423,7 @@ scrna.anchors <- FindIntegrationAnchors(object.list = scrna.list, anchor.feature
 scrna.combined <- IntegrateData(anchorset = scrna.anchors, dims = 1:30, new.assay.name = "CCA")
 rm(scrna.anchors)
 # Perform an integrated analysis
-DefaultAssay(scrna.combined) <- "integrated"
+DefaultAssay(scrna.combined) <- "CCA"
 scrna.combined <- ScaleData(scrna.combined, verbose = FALSE)
 scrna.combined <- RunPCA(scrna.combined, npcs = 30, verbose = FALSE)
            

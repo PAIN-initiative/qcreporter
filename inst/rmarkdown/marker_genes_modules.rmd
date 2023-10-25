@@ -475,7 +475,7 @@ print(res_2)
 dev.off()
 res_2
 meta <- scrna.combined@meta.data
-Idents(scrna.combined) <- scrna.combined@meta.data$resolution
+Idents(scrna.combined) <- resolution
 rm(scrna.list)
 
 p1 <- DimPlot(scrna.combined, reduction = "umap", group.by = "sample_id")

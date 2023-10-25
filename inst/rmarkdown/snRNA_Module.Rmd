@@ -53,10 +53,10 @@ geneTable <- read.csv(paste0(refdir, "geneAnnotationTable.csv"), header = T, row
 # Step 2: Pre-processing
 # Create Seurat object 
 cell_bender_mat = list()
-scrna.list = list()
+snrna.list = list()
 for (sample in samples){
 cell_bender_mat[[sample]] <- Read_CellBender_h5_Mat(file_name = paste0(cellbender_dir,sample,'/',sample,"_CellBender_output_file_filtered.h5"))
-scrna.list[[sample]] <- CreateSeuratObject(counts = cell_bender_mat[[sample]])
+snrna.list[[sample]] <- CreateSeuratObject(counts = cell_bender_mat[[sample]])
 }
 
 # Remove raw data to save memory
@@ -65,13 +65,13 @@ rm(data.10x)
 # add treatment
 for(i in 1:length(samples)){
   sample=samples[i]; treatment=treatments[i];
-  scrna.list[[sample]]$treatment <- treatment
+  snrna.list[[sample]]$treatment <- treatment
 }
 
 # add sample name
 for(i in 1:length(samples)){
   sample=samples[i]; sample_id=samples[i];
-  scrna.list[[sample]]$sample_id <- sample_id
+  snrna.list[[sample]]$sample_id <- sample_id
 }
 ```
 
@@ -80,30 +80,30 @@ for(i in 1:length(samples)){
 ```{r echo=FALSE,message=FALSE}
 # Add percent.mt and percent.rb to cell level metadata
 for (sample in samples) {
-  scrna.list[[sample]][["percent.mito"]] <- PercentageFeatureSet(scrna.list[[sample]], pattern = "^MT:|MT-|mt:|mt-") 
-  scrna.list[[sample]][["percent.ribo"]] <- PercentageFeatureSet(scrna.list[[sample]], pattern = "^RP[LS]|Rp[LS]")
+  snrna.list[[sample]][["percent.mito"]] <- PercentageFeatureSet(snrna.list[[sample]], pattern = "^MT:|MT-|mt:|mt-") 
+  snrna.list[[sample]][["percent.ribo"]] <- PercentageFeatureSet(snrna.list[[sample]], pattern = "^RP[LS]|Rp[LS]")
 }
 
 for (sample in samples) {
-scrna.list[[sample]] <- RenameCells(object = scrna.list[[sample]], add.cell.id = sample)
+snrna.list[[sample]] <- RenameCells(object = snrna.list[[sample]], add.cell.id = sample)
 }
 
 # merge list of prefiltered Seurat
-scrna.combined_prefilter <- Merge_Seurat_List(scrna.list,
+snrna.combined_prefilter <- Merge_Seurat_List(snrna.list,
                                               add.cell.ids = NULL,
                                               merge.data = TRUE,
                                               project = "sample_id")
 # metadata variable
-metadata_prefilter <- scrna.combined_prefilter@meta.data
+metadata_prefilter <- snrna.combined_prefilter@meta.data
 # Save Prefilter
-saveRDS(scrna.combined_prefilter, paste0(out_dir, "scrna.combined_prefilter.seurat.", projectName, ".rds"))
+saveRDS(snrna.combined_prefilter, paste0(out_dir, "snrna.combined_prefilter.seurat.", projectName, ".rds"))
                    
 # Detection based filtering
 # 300 detected genes and the genes need to be expressesd in atleast 3 cells.
-selected_c <- WhichCells(scrna.combined_prefilter, expression = nFeature_RNA > 300)
-selected_f <- rownames(scrna.combined_prefilter)[Matrix::rowSums(scrna.combined_prefilter) > 3]
+selected_c <- WhichCells(snrna.combined_prefilter, expression = nFeature_RNA > 300)
+selected_f <- rownames(snrna.combined_prefilter)[Matrix::rowSums(snrna.combined_prefilter) > 3]
 # Apply the filter
-data.filt <- subset(scrna.combined_prefilter, features = selected_f, cells = selected_c)
+data.filt <- subset(snrna.combined_prefilter, features = selected_f, cells = selected_c)
 # Mito Filter
 selected_mito <- WhichCells(data.filt, expression = percent.mito == 0)
 data.filt <- subset(data.filt, cells = selected_mito)
@@ -111,7 +111,7 @@ dim(data.filt)
 table(data.filt$orig.ident)
 
 # Split Seurat Object
-scrna.list <- SplitObject(data.filt, split.by = "sample_id")
+snrna.list <- SplitObject(data.filt, split.by = "sample_id")
   
 # Compute the relative expression of each gene per cell Use sparse matrix
 # operations, if your dataset is large, doing matrix devisions the regular way
@@ -120,7 +120,7 @@ C = list()
 most_expressed = list()
 par(mar = c(4, 8, 2, 1))
 for (sample in samples){
-C[[sample]] <- scrna.list[[sample]]@assays$RNA@counts
+C[[sample]] <- snrna.list[[sample]]@assays$RNA@counts
 C[[sample]] <- Matrix::t(Matrix::t(C[[sample]])/Matrix::colSums(C[[sample]])) * 100
 most_expressed[[sample]] <- order(apply(C[[sample]], 1, median), decreasing = T)[20:1]
 }
@@ -136,35 +136,35 @@ for (sample in samples){
     # Filter MALAT1
 if (filter_MALAT == TRUE){
   for (sample in samples){
-  scrna.list[[sample]] <- scrna.list[[sample]][!grepl("MALAT1:Malat1", rownames(scrna.list[[sample]])), ]
+  snrna.list[[sample]] <- snrna.list[[sample]][!grepl("MALAT1:Malat1", rownames(snrna.list[[sample]])), ]
   }
 }
 # Filter Mitocondrial
 if (filter_MITO == TRUE){
   for (sample in samples){
-  scrna.list[[sample]] <- scrna.list[[sample]][!grepl("^MT:|MT-|mt:|mt-", rownames(scrna.list[[sample]])), ]
+  snrna.list[[sample]] <- snrna.list[[sample]][!grepl("^MT:|MT-|mt:|mt-", rownames(snrna.list[[sample]])), ]
   }
 }
 # Filter Ribosomal gene (optional if that is a problem on your data) data.filt
 if (filter_RIBO == TRUE){
   for (sample in samples){
-  scrna.list[[sample]] <- scrna.list[[sample]][!grepl("^RP[LS]|Rp[LS]", rownames(scrna.list[[sample]])), ]
+  snrna.list[[sample]] <- snrna.list[[sample]][!grepl("^RP[LS]|Rp[LS]", rownames(snrna.list[[sample]])), ]
   }
 }
 
 # merge list of prefiltered Seurat
-scrna.combined_prefilter <- Merge_Seurat_List(scrna.list,
+snrna.combined_prefilter <- Merge_Seurat_List(snrna.list,
                                               add.cell.ids = NULL,
                                               merge.data = TRUE,
                                               project = "sample_id")
-saveRDS(scrna.combined_prefilter,paste0(out_dir,'scrna.combined_prefilter.rds')) # Note this is after removing cells with > 0 % Mitochondrial Transcripts.
+saveRDS(snrna.combined_prefilter,paste0(out_dir,'snrna.combined_prefilter.rds')) # Note this is after removing cells with > 0 % Mitochondrial Transcripts.
 
 # metadata variable
-metadata_prefilter <- scrna.combined_prefilter@meta.data
+metadata_prefilter <- snrna.combined_prefilter@meta.data
 
 metadata_prefilter_list <- list()
 for (sample in samples){
-    metadata_prefilter_list[[sample]] <- scrna.list[[sample]]@meta.data
+    metadata_prefilter_list[[sample]] <- snrna.list[[sample]]@meta.data
 }
 # N Cells Prefilter
 n_cells = list()
@@ -183,7 +183,7 @@ n_cells_df <- as.data.frame(cbind(samples,NCells))
 # grab number of cells
 n_cells = list()
 for (sample in samples){
-n_cells[[sample]] <- length(colnames(scrna.list[[sample]]))
+n_cells[[sample]] <- length(colnames(snrna.list[[sample]]))
 }
 multiplet_rate = list()
 for (sample in samples){
@@ -213,26 +213,26 @@ for (sample in samples){
 }
 nExp = list()
 for (sample in samples){
-scrna.list[[sample]] <- scrna.list[[sample]] %>% NormalizeData()
-scrna.list[[sample]] = FindVariableFeatures(scrna.list[[sample]], verbose = F)
-scrna.list[[sample]] = ScaleData(scrna.list[[sample]],verbose = F)
-scrna.list[[sample]] = RunPCA(scrna.list[[sample]], verbose = F, npcs = 20)
-scrna.list[[sample]] = RunUMAP(scrna.list[[sample]], dims = 1:10, verbose = F)
-nExp[[sample]] <- round(ncol(scrna.list[[sample]]) * multiplet_rate[[sample]])  # expected doublets
-scrna.list[[sample]] <- suppressMessages(doubletFinder_v3(scrna.list[[sample]], pN = 0.25, pK = 0.09, nExp = nExp[[sample]], PCs = 1:10))
+snrna.list[[sample]] <- snrna.list[[sample]] %>% NormalizeData()
+snrna.list[[sample]] = FindVariableFeatures(snrna.list[[sample]], verbose = F)
+snrna.list[[sample]] = ScaleData(snrna.list[[sample]],verbose = F)
+snrna.list[[sample]] = RunPCA(snrna.list[[sample]], verbose = F, npcs = 20)
+snrna.list[[sample]] = RunUMAP(snrna.list[[sample]], dims = 1:10, verbose = F)
+nExp[[sample]] <- round(ncol(snrna.list[[sample]]) * multiplet_rate[[sample]])  # expected doublets
+snrna.list[[sample]] <- suppressMessages(doubletFinder_v3(snrna.list[[sample]], pN = 0.25, pK = 0.09, nExp = nExp[[sample]], PCs = 1:10))
 }
 
 
 DF.name = list()
 for (sample in samples){
 # name of the DF prediction can change, so extract the correct column name.
-DF.name[[sample]] = colnames(scrna.list[[sample]]@meta.data)[grepl("^DF.classification", colnames(scrna.list[[sample]]@meta.data))]
+DF.name[[sample]] = colnames(snrna.list[[sample]]@meta.data)[grepl("^DF.classification", colnames(snrna.list[[sample]]@meta.data))]
 }
 # Plot the Doublet Finder results
 UMAP_plots <- list()
 for (sample in samples){
-    UMAP_plots[[sample]] <-  cowplot::plot_grid(ncol = 2, DimPlot(scrna.list[[sample]], group.by = "sample_id") + NoAxes(),
-    DimPlot(scrna.list[[sample]], group.by = DF.name[[sample]]) + NoAxes())
+    UMAP_plots[[sample]] <-  cowplot::plot_grid(ncol = 2, DimPlot(snrna.list[[sample]], group.by = "sample_id") + NoAxes(),
+    DimPlot(snrna.list[[sample]], group.by = DF.name[[sample]]) + NoAxes())
 }
 
 for (sample in samples){
@@ -243,7 +243,7 @@ for (sample in samples){
 
 VlnPlots = list()
 for (sample in samples){
-VlnPlots[[sample]] <- VlnPlot(scrna.list[[sample]], features = "nFeature_RNA", group.by = DF.name[[sample]], pt.size = 0.1)
+VlnPlots[[sample]] <- VlnPlot(snrna.list[[sample]], features = "nFeature_RNA", group.by = DF.name[[sample]], pt.size = 0.1)
 }
 
 for (sample in samples){
@@ -255,11 +255,11 @@ for (sample in samples){
 # Remove the Doublet Cells
 cells.use = list()
 for (sample in samples){
-     cells.use[[sample]] <- colnames(scrna.list[[sample]])[which(scrna.list[[sample]][[]][DF.name[[sample]]] == "Singlet")]
-     scrna.list[[sample]] <- subset(scrna.list[[sample]], cells = cells.use[[sample]])
+     cells.use[[sample]] <- colnames(snrna.list[[sample]])[which(snrna.list[[sample]][[]][DF.name[[sample]]] == "Singlet")]
+     snrna.list[[sample]] <- subset(snrna.list[[sample]], cells = cells.use[[sample]])
 }
 
-so_postfilter <- Merge_Seurat_List(scrna.list,
+so_postfilter <- Merge_Seurat_List(snrna.list,
                                               add.cell.ids = NULL,
                                               merge.data = TRUE,
                                               project = "sample_id")
@@ -268,7 +268,7 @@ metadata_postfilter <- so_postfilter@meta.data
 
 metadata_postfilter_list <- list()
 for (sample in samples){
-    metadata_postfilter_list[[sample]] <- scrna.list[[sample]]@meta.data
+    metadata_postfilter_list[[sample]] <- snrna.list[[sample]]@meta.data
 }
 # N Cells Postfilter
 n_cells = list()
@@ -509,7 +509,7 @@ DT::datatable(final_df,class = 'cell-border stripe',rownames=F,filter='top',
             
 ```
 
-scRNA seq report well module v.`r {snrna_seq_sample_module_version}`, Brigham and Women's Bioinformatics and Genomics Hub  
+snrna seq report well module v.`r {snrna_seq_sample_module_version}`, Brigham and Women's Bioinformatics and Genomics Hub  
 
 ```{r snrna_cleanup_cluster_annotation_, include = FALSE}
 module_vars <- setdiff(ls(), orig_workspace)

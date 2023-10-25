@@ -288,6 +288,110 @@ ggplot(data = n_cells_df, aes(x = samples,y = as.integer(NCells),fill = samples)
 dev.off()
 ```
 
+### QC Plots
+<a  id="Mitochondrial_Percentage"></a> 
+```{r echo=FALSE,message=FALSE}
+# mito
+prefilter_qc_mito <- metadata_prefilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
+geom_point() + 
+scale_colour_gradient(low = "gray90", high = "black") +
+stat_smooth(method=lm) +
+scale_x_log10() +
+scale_y_log10() + 
+theme_classic() +
+geom_vline(xintercept = 500) +
+geom_hline(yintercept = 300) +
+facet_wrap(~sample_id) + 
+ggtitle("Prefilter Mitochondrial Percentage")
+
+postfilter_qc_mito <- metadata_postfilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
+geom_point() + 
+scale_colour_gradient(low = "gray90", high = "black") +
+stat_smooth(method=lm) +
+scale_x_log10() +
+scale_y_log10() + 
+theme_classic() +
+geom_vline(xintercept = 500) +
+geom_hline(yintercept = 300) +
+facet_wrap(~sample_id) + 
+ggtitle("Postfilter Mitochondrial Percentag")
+
+ggarrange(prefilter_qc_mito,postfilter_qc_mito,ncol=1,nrow=2,widths = 25,heights = 30)
+```
+
+<a  id="Ribosomal_Percentage"></a> 
+```{r echo=FALSE,message=FALSE}
+# ribo
+prefilter_qc_ribo <- metadata_prefilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
+geom_point() + 
+scale_colour_gradient(low = "gray90", high = "black") +
+stat_smooth(method=lm) +
+scale_x_log10() +
+scale_y_log10() + 
+theme_classic() +
+geom_vline(xintercept = 500) +
+geom_hline(yintercept = 300) +
+facet_wrap(~sample_id) +
+ggtitle("Prefilter Ribosomal Percentage")
+
+postfilter_qc_ribo <- metadata_postfilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
+geom_point() + 
+scale_colour_gradient(low = "gray90", high = "black") +
+stat_smooth(method=lm) +
+scale_x_log10() +
+scale_y_log10() + 
+theme_classic() +
+geom_vline(xintercept = 500) +
+geom_hline(yintercept = 300) +
+facet_wrap(~sample_id) +
+ggtitle("Postfilter Ribosomal Percentage")
+
+ggarrange(prefilter_qc_ribo,postfilter_qc_ribo,ncol=1,nrow=2,widths = 10,heights = 8)
+```
+<a  id="UMIs_transcripts_per_cell"></a> 
+```{r echo=FALSE,message=FALSE}
+UMIs_transcripts_per_cell_prefilter <- metadata_prefilter %>% 
+  	ggplot(aes(color=sample_id, x=nCount_RNA, fill= sample_id)) + 
+  	geom_density(alpha = 0.2) + 
+  	scale_x_log10() + 
+  	theme_classic() +
+  	ylab("Cell density") +
+  	geom_vline(xintercept = 500) + 
+    ggtitle("Prefilter UMIs Transcripts Per Cell")
+
+UMIs_transcripts_per_cell_postfilter <- metadata_postfilter %>% 
+  	ggplot(aes(color=sample_id, x=nCount_RNA, fill= sample_id)) + 
+  	geom_density(alpha = 0.2) + 
+  	scale_x_log10() + 
+  	theme_classic() +
+  	ylab("Cell density") +
+  	geom_vline(xintercept = 500) + 
+    ggtitle("Postfilter UMIs Transcripts Per Cell")
+
+ggarrange(UMIs_transcripts_per_cell_prefilter,UMIs_transcripts_per_cell_postfilter,ncol=1,nrow=2,widths = 10,heights = 8)
+```
+<a  id="Genes Per Cell"></a> 
+```{r echo=FALSE,message=FALSE}
+genes_per_cell_pre <- metadata_prefilter %>% 
+  	ggplot(aes(color=sample_id, x=nCount_RNA, fill=sample_id )) + 
+  	geom_density(alpha = 0.2) + 
+  	theme_classic() +
+  	scale_x_log10() + 
+  	geom_vline(xintercept = 300) + 
+    ggtitle("Prefilter Genes Per Cell")
+
+genes_per_cell_post <- metadata_postfilter %>% 
+  	ggplot(aes(color=sample_id, x=nCount_RNA, fill=sample_id )) + 
+  	geom_density(alpha = 0.2) + 
+  	theme_classic() +
+  	scale_x_log10() + 
+  	geom_vline(xintercept = 300) + 
+    ggtitle("Postfilter Genes Per Cell")
+
+ggarrange(genes_per_cell_pre,genes_per_cell_post,ncol=1,nrow=2,widths = 10,heights = 8)
+```
+
+
 [Return to Contents](#snrna_seq_sample_top) 
 
 # Feature Selection

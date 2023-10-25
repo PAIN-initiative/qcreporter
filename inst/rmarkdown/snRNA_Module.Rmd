@@ -626,6 +626,29 @@ DT::datatable(final_df,class = 'cell-border stripe',rownames=F,filter='top',
             
 ```
 
+```{r echo=FALSE,message=FALSE}
+remove_markers <- setdiff(markers,row.names(snrna.combined))
+markers <- markers[!markers%in%remove_markers]
+markers <- unique(markers)
+pdf(paste0(out_dir, "combined.markers.geneSymbol.pdf"))
+ggp = list()
+for (marker in markers){
+    ggp[[marker]]=FeaturePlot(snrna.combined, features=marker) + ggtitle(marker)
+    print(ggp[[marker]])
+}
+dev.off()
+  
+pdf(paste0(out_dir, "combined.dotplot.geneSymbol.pdf"), width = 30, height = 10)
+p1 <- scCustomize::DotPlot_scCustom(snrna.combined, features = markers, x_lab_rotate = TRUE) + scale_x_discrete(breaks= markers)
+print(p1)
+dev.off()
+      
+
+  
+```
+ ---  
+
+
 snrna seq report well module v.`r {snrna_seq_sample_module_version}`, Brigham and Women's Bioinformatics and Genomics Hub  
 
 ```{r snrna_cleanup_cluster_annotation_, include = FALSE}

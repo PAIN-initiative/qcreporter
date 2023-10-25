@@ -485,14 +485,14 @@ saveRDS(snrna.combined, paste0(out_dir, "snrna.combined_postfilter.seurat.", pro
 
 ```{r echo=FALSE,message=FALSE}
 # Clustering
-alldata.int <- FindNeighbors(alldata.int, dims = 1:30, k.param = 60, prune.SNN = 1/15)
+snrna.combined <- FindNeighbors(snrna.combined, dims = 1:30, k.param = 60, prune.SNN = 1/15)
 # Clustering with louvain (algorithm 1)
-alldata.int <- FindClusters(alldata.int, graph.name = "CCA_snn", resolution = seq(0.5,3,by=0.1),algorithm = alg,verbose=FALSE)
-alldata.int <- RunUMAP(alldata.int, reduction = "pca", dims = 1:20, n.components = 2, n.neighbors = 30,
+snrna.combined <- FindClusters(snrna.combined, graph.name = "CCA_snn", resolution = seq(0.5,3,by=0.1),algorithm = alg,verbose=FALSE)
+snrna.combined <- RunUMAP(snrna.combined, reduction = "pca", dims = 1:20, n.components = 2, n.neighbors = 30,
     n.epochs = 200, min.dist = 0.3, learning.rate = 1, spread = 1)
-res_0.5 <-  scCustomize::DimPlot_scCustom(alldata.int, group.by = "CCA_snn_res.0.5", label = TRUE) + ggtitle("louvain_0.5")
-res_1   <- scCustomize::DimPlot_scCustom(alldata.int, group.by = "CCA_snn_res.1", label = TRUE) + ggtitle("louvain_1")
-res_2   <- scCustomize::DimPlot_scCustom(alldata.int, group.by = "CCA_snn_res.2", label = TRUE) + ggtitle("louvain_2")
+res_0.5 <-  scCustomize::DimPlot_scCustom(snrna.combined, group.by = "CCA_snn_res.0.5", label = TRUE) + ggtitle("louvain_0.5")
+res_1   <- scCustomize::DimPlot_scCustom(snrna.combined, group.by = "CCA_snn_res.1", label = TRUE) + ggtitle("louvain_1")
+res_2   <- scCustomize::DimPlot_scCustom(snrna.combined, group.by = "CCA_snn_res.2", label = TRUE) + ggtitle("louvain_2")
 pdf(paste0(out_dir,"resolution_snn_res_0.5.pdf"))
 res_0.5
 dev.off()
@@ -504,15 +504,15 @@ res_2
 dev.off()
 
 # Save Data
-saveRDS(alldata.int,paste0(out_dir,"snRNA_postfilter_int_cl.rds"))
+saveRDS(snrna.combined,paste0(out_dir,"snRNA_postfilter_int_cl.rds"))
 ```
 ```{r echo=FALSE,message=FALSE}
 # Set the identity as louvain with resolution 0.5
-meta <- alldata.int@meta.data
-Idents(alldata.int) <- resolution
+meta <- snrna.combined@meta.data
+Idents(snrna.combined) <- resolution
 # Find Markers
-DefaultAssay(alldata.int) <- "RNA"
-markers_genes <- FindAllMarkers(alldata.int, log2FC.threshold = 0.2, test.use = "wilcox",
+DefaultAssay(snrna.combined) <- "RNA"
+markers_genes <- FindAllMarkers(snrna.combined, log2FC.threshold = 0.2, test.use = "wilcox",
     min.pct = 0.1, min.diff.pct = 0.2, only.pos = TRUE, max.cells.per.ident = 50,
     assay = "RNA")
 names(markers_genes)[names(markers_genes) == "gene"] <- "geneSymbol"
@@ -537,25 +537,25 @@ topN <- Extract_Top_Markers(markers_genes, num_genes = 25, named_vector = FALSE,
 pdf(paste0(out_dir, "combined.top25markers.pdf"))
 ggp = list()
 for (marker in topN){
-    ggp[[marker]]=FeaturePlot(alldata.int, features=marker)
+    ggp[[marker]]=FeaturePlot(snrna.combined, features=marker)
     print(ggp[[marker]])
 }
 dev.off()
 # Dotplot
-remove_markers <- setdiff(markers,row.names(alldata.int))
+remove_markers <- setdiff(markers,row.names(snrna.combined))
 markers <- markers[!markers%in%remove_markers]
 markers <- unique(markers)
 
 pdf(paste0(out_dir, "combined.markers.geneSymbol.pdf"))
 ggp = list()
 for (marker in markers){
-    ggp[[marker]]=FeaturePlot(alldata.int, features=marker,min.cutoff = 0) + ggtitle(marker)
+    ggp[[marker]]=FeaturePlot(snrna.combined, features=marker,min.cutoff = 0) + ggtitle(marker)
     print(ggp[[marker]])
 }
 dev.off()
 
 pdf(paste0(out_dir, "combined.dotplot.geneSymbol.pdf"), width = 30, height = 10)
-p1 <- DotPlot_scCustom(alldata.int, features = markers, x_lab_rotate = TRUE) + scale_x_discrete(breaks= markers)
+p1 <- DotPlot_scCustom(snrna.combined, features = markers, x_lab_rotate = TRUE) + scale_x_discrete(breaks= markers)
 print(p1)
 dev.off()
 ``` 

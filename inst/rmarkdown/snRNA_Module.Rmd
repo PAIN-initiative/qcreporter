@@ -330,7 +330,10 @@ for (i in 1:length(alldata.list)) {
     alldata.list[[i]] <- FindVariableFeatures(alldata.list[[i]], selection.method = "vst",
         nfeatures = 2000, verbose = FALSE)
 }
+# select features that are repeatedly variable across datasets for integration
+features <- SelectIntegrationFeatures(object.list = alldata.list)
 # Find Anchors
+
 alldata.anchors <- FindIntegrationAnchors(object.list = alldata.list, dims = 1:30,
     reduction = "cca")
 # Integrate
@@ -339,12 +342,18 @@ alldata.int <- IntegrateData(anchorset = alldata.anchors, dims = 1:30, new.assay
 # Run Dimensionality reduction on integrated space
 alldata.int <- ScaleData(alldata.int, verbose = FALSE)
 alldata.int <- RunPCA(alldata.int, npcs = 30, verbose = FALSE)
-alldata.int <- RunUMAP(alldata.int, dims = 1:30)
-
-
 saveRDS(alldata.int,paste0(out_dir,"snRNA_postfilter_int.rds"))
 
 ``` 
+<a  id="elbow_plot"></a> 
+### Linear Dimensionality Reduction 
+```{r echo=FALSE,message=FALSE}
+    pdf(paste0(out_dir, "ElbowPlot.pdf"))
+    p1 <- ElbowPlot(alldata.int) + ggtitle("Integrated") + theme(aspect.ratio=5/10) + theme(plot.margin = unit(c(6, 6, 6, 6), "cm"))
+    print(p1 + coord_fixed())
+    dev.off()
+
+```
 [Return to Contents](#snrna_seq_sample_top) 
 
 ```{r echo=FALSE,message=FALSE}
@@ -362,7 +371,8 @@ dev.off()
 alldata.int <- FindNeighbors(alldata.int, dims = 1:30, k.param = 60, prune.SNN = 1/15)
 # Clustering with louvain (algorithm 1)
 alldata.int <- FindClusters(alldata.int, graph.name = "CCA_snn", resolution = seq(0.5,3,by=0.1),algorithm = alg,verbose=FALSE)
-
+alldata.int <- RunUMAP(alldata.int, reduction = "pca", dims = 1:20, n.components = 2, n.neighbors = 30,
+    n.epochs = 200, min.dist = 0.3, learning.rate = 1, spread = 1)
 res_0.5 <-  scCustomize::DimPlot_scCustom(alldata.int, group.by = "CCA_snn_res.0.5", label = TRUE) + ggtitle("louvain_0.5")
 res_1   <- scCustomize::DimPlot_scCustom(alldata.int, group.by = "CCA_snn_res.1", label = TRUE) + ggtitle("louvain_1")
 res_2   <- scCustomize::DimPlot_scCustom(alldata.int, group.by = "CCA_snn_res.2", label = TRUE) + ggtitle("louvain_2")

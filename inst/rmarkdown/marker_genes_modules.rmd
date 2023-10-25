@@ -420,7 +420,7 @@ scrna.list <- lapply(X = scrna.list, FUN = function(x) {
 features <- SelectIntegrationFeatures(object.list = scrna.list)
 # Perform integration
 scrna.anchors <- FindIntegrationAnchors(object.list = scrna.list, anchor.features = features)
-scrna.combined <- IntegrateData(anchorset = scrna.anchors)
+scrna.combined <- IntegrateData(anchorset = scrna.anchors, dims = 1:30, new.assay.name = "CCA"))
 rm(scrna.anchors)
 # Perform an integrated analysis
 DefaultAssay(scrna.combined) <- "integrated"
@@ -444,9 +444,9 @@ scrna.combined <- RunPCA(scrna.combined, npcs = 30, verbose = FALSE)
 ### UMAP - Resolutions
 ```{r echo=FALSE,message=FALSE}
 # Continue on analysis
+scrna.combined <- FindNeighbors(scrna.combined, dims = 1:30, k.param = 60, prune.SNN = 1/15)
+scrna.combined <- FindClusters(scrna.combined, graph.name = "CCA_snn", resolution = seq(0.5,3,by=0.1),algorithm = alg,verbose=FALSE)
 scrna.combined <- RunUMAP(scrna.combined, reduction = "pca", dims = 1:30,verbose=FALSE)
-scrna.combined <- FindNeighbors(scrna.combined, reduction = "pca", dims = 1:8,verbose=FALSE)
-scrna.combined <- FindClusters(scrna.combined, resolution = seq(0.5,3,by=0.1),algorithm = alg,verbose=FALSE)
 res_0.5 <- DimPlot(scrna.combined, group.by = "CCA_snn_res.0.5", label = TRUE)
 pdf(paste0(out_dir, "res_0.5.pdf"))
 print(res_0.5)

@@ -393,81 +393,94 @@ ggarrange(genes_per_cell_pre,genes_per_cell_post,ncol=1,nrow=2,widths = 10,heigh
 
 
 [Return to Contents](#snrna_seq_sample_top) 
-
-# Feature Selection
 ```{r echo=FALSE,message=FALSE}
-suppressWarnings(suppressMessages(so_postfilter <- FindVariableFeatures(so_postfilter, selection.method = "vst",
-    nfeatures = 2000, verbose = FALSE, assay = "RNA")))
-top20 <- head(VariableFeatures(so_postfilter), 20)
-pdf(paste0(out_dir,"Top20_VariableGenes.pdf"))
-LabelPoints(plot = VariableFeaturePlot(so_postfilter), points = top20, repel = TRUE)
-dev.off()
-
-so_postfilter <- ScaleData(so_postfilter, vars.to.regress = "nFeature_RNA",assay = "RNA")
-so_postfilter <- RunPCA(so_postfilter, npcs = 50, verbose = F)
-
-pdf(paste0(out_dir,"PCA_Plots.pdf"),width=30,height=30)
-plot_grid(ncol = 3, DimPlot(so_postfilter, reduction = "pca", group.by = "sample_id",
-    dims = 1:2), DimPlot(so_postfilter, reduction = "pca", group.by = "sample_id", dims = 3:4),
-    DimPlot(so_postfilter, reduction = "pca", group.by = "sample_id", dims = 5:6))
-dev.off()
-
-pdf(paste0(out_dir,"Genes_Per_PC.pdf"),width=30,height=30)
-VizDimLoadings(so_postfilter, dims = 1:5, reduction = "pca", ncol = 5, balanced = T)
-dev.off()
-
-pdf(paste0(out_dir,"ElbowPlot.pdf"))
-ElbowPlot(so_postfilter, reduction = "pca", ndims = 50)
-dev.off()
-so_postfilter <- RunUMAP(so_postfilter, reduction = "pca", dims = 1:20, n.components = 2, n.neighbors = 30,
-    n.epochs = 200, min.dist = 0.3, learning.rate = 1, spread = 1)
-
-pdf(paste0(out_dir,"UMAP_Unannotated.pdf"))
-DimPlot(so_postfilter)
-dev.off()
-
-# Split Seurat Object
-alldata.list <- SplitObject(so_postfilter, split.by = "sample_id")
-
-for (i in 1:length(alldata.list)) {
-    alldata.list[[i]] <- NormalizeData(alldata.list[[i]], verbose = FALSE)
-    alldata.list[[i]] <- FindVariableFeatures(alldata.list[[i]], selection.method = "vst",
-        nfeatures = 2000, verbose = FALSE)
-}
+# Integration
+# normalize and identify variable features for each dataset independently
+snrna.list <- SplitObject(so_postfilter, split.by = "sample_id")
+snrna.list <- lapply(X = snrna.list, FUN = function(x) {
+    x <- NormalizeData(x)
+    x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
+})
 # select features that are repeatedly variable across datasets for integration
-features <- SelectIntegrationFeatures(object.list = alldata.list)
-# Find Anchors
-
-alldata.anchors <- FindIntegrationAnchors(object.list = alldata.list, dims = 1:30,
-    reduction = "cca")
-# Integrate
-alldata.int <- IntegrateData(anchorset = alldata.anchors, dims = 1:30, new.assay.name = "CCA")
-
-# Run Dimensionality reduction on integrated space
-alldata.int <- ScaleData(alldata.int, verbose = FALSE)
-alldata.int <- RunPCA(alldata.int, npcs = 30, verbose = FALSE)
-saveRDS(alldata.int,paste0(out_dir,"snRNA_postfilter_int.rds"))
-
-``` 
+features <- SelectIntegrationFeatures(object.list = snrna.list)
+# Perform integration
+snrna.anchors <- FindIntegrationAnchors(object.list = snrna.list, anchor.features = features)
+snrna.combined <- IntegrateData(anchorset = snrna.anchors, dims = 1:30, new.assay.name = "CCA")
+rm(snrna.anchors)
+# Perform an integrated analysis
+DefaultAssay(snrna.combined) <- "CCA"
+snrna.combined <- ScaleData(snrna.combined, verbose = FALSE)
+snrna.combined <- RunPCA(snrna.combined, npcs = 30, verbose = FALSE)
+           
+```
 <a  id="elbow_plot"></a> 
 ### Linear Dimensionality Reduction 
 ```{r echo=FALSE,message=FALSE}
     pdf(paste0(out_dir, "ElbowPlot.pdf"))
-    p1 <- ElbowPlot(alldata.int) + ggtitle("Integrated") + theme(aspect.ratio=5/10) + theme(plot.margin = unit(c(6, 6, 6, 6), "cm"))
+    p1 <- ElbowPlot(snrna.combined) + ggtitle("Integrated") + theme(aspect.ratio=5/10) + theme(plot.margin = unit(c(6, 6, 6, 6), "cm"))
     print(p1 + coord_fixed())
     dev.off()
 
-```
-[Return to Contents](#snrna_seq_sample_top) 
 
+
+
+```
+<a  id="UMAP_Resolutions"></a> 
+### UMAP - Resolutions
 ```{r echo=FALSE,message=FALSE}
-### Plot CCA
-# Plotting
-p2 <- DimPlot_scCustom(alldata.int, reduction = "umap", group.by = "sample_id") + ggtitle("UMAP CCA")
-pdf(paste0(out_dir,"UMAP_CCA.pdf"))
-p2 + coord_fixed()
+# Continue on analysis
+snrna.combined <- FindNeighbors(snrna.combined, dims = 1:30, k.param = 60, prune.SNN = 1/15)
+snrna.combined <- FindClusters(snrna.combined, graph.name = "CCA_snn", resolution = seq(0.5,3,by=0.1),algorithm = alg,verbose=FALSE)
+snrna.combined <- RunUMAP(snrna.combined, reduction = "pca", dims = 1:30,verbose=FALSE)
+res_0.5 <- DimPlot(snrna.combined, group.by = "CCA_snn_res.0.5", label = TRUE)
+pdf(paste0(out_dir, "res_0.5.pdf"))
+print(res_0.5)
 dev.off()
-``` 
+res_0.5
+res_0.7 <- DimPlot(snrna.combined, group.by = "CCA_snn_res.0.7", label = TRUE)
+pdf(paste0(out_dir, "res_0.7.pdf"))
+print(res_0.7)
+dev.off()
+res_1 <- DimPlot(snrna.combined, group.by = "CCA_snn_res.1", label = TRUE)
+pdf(paste0(out_dir, "res_1.pdf"))
+print(res_1)
+dev.off()
+res_1
+res_1.2 <- DimPlot(snrna.combined, group.by = "CCA_snn_res.1.2", label = TRUE)
+pdf(paste0(out_dir, "res_1.2.pdf"))
+print(res_1.2)
+dev.off()
+res_1.4 <- DimPlot(snrna.combined, group.by = "CCA_snn_res.1.4", label = TRUE)
+pdf(paste0(out_dir, "res_1.4.pdf"))
+print(res_1.4) 
+dev.off()
+res_2 <- DimPlot(snrna.combined, group.by = "CCA_snn_res.2", label = TRUE)
+pdf(paste0(out_dir, "res_2.pdf"))
+print(res_2)
+dev.off()
+res_2
+meta <- snrna.combined@meta.data
+Idents(snrna.combined) <- resolution
+rm(snrna.list)
+
+p1 <- DimPlot(snrna.combined, reduction = "umap", group.by = "sample_id")
+pdf(file=paste0(out_dir, "combined.umap.colorBySample.pdf"))
+print(p1 + coord_fixed())
+dev.off()
+print(p1 + coord_fixed())
+p2 <- DimPlot(snrna.combined, reduction = "umap", label = TRUE, repel = TRUE)
+pdf(paste0(out_dir, "combined.umap.colorByCluster.pdf"))
+print(p2 + coord_fixed())
+dev.off()
+print(p2 + coord_fixed())
+p4 <- DimPlot(snrna.combined, reduction = "umap", group.by = "treatment")
+pdf(file=paste0(out_dir, "combined.umap.colorByTreatment.pdf"))
+print(p4 + coord_fixed())
+dev.off() 
+print(p4 + coord_fixed())
+saveRDS(snrna.combined, paste0(out_dir, "snrna.combined_postfilter.seurat.", projectName, ".rds"))
+```
+
 [Return to Contents](#snrna_seq_sample_top) 
 
 ```{r echo=FALSE,message=FALSE}

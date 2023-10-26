@@ -297,11 +297,29 @@ dev.off()
 ### QC Plots
 <a  id="Mitochondrial_Percentage"></a> 
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
-snrna.list <- SplitObject(scrna.combined_prefilter, split.by = "sample_id")
+metadata_prefilter <- scrna.combined_prefilter@meta.data %>% as.data.table
+metadata_postfilter <- so_postfilter@meta.data %>% as.data.table
+cell_count_prefilter  <- metadata_prefilter[, .N, by = "sample_id"]
+cell_count_prefilter <- as.data.frame(cell_count_prefilter)
+cell_count_prefilter$QC_Status <- rep("Prefilter",length(cell_count_prefilter$N))
+colnames(cell_count_prefilter) <- c("Sample","N_Cells","QC_Status")
+cell_count_postfilter <- metadata_postfilter[, .N, by = "sample_id"]
+cell_count_postfilter <- as.data.frame(cell_count_postfilter)
+cell_count_postfilter$QC_Status <- rep("Postfilter",length(cell_count_prefilter$N))
+colnames(cell_count_postfilter) <- c("Sample","N_Cells","QC_Status")
+NCellDF <- rbind(cell_count_prefilter,cell_count_postfilter)
+order <- c("Prefilter","Postfilter")
+pdf(paste0(out_dir,"N_Cells_prefilter_postfilter.pdf"))
+ggplot(NCellDF, aes(fill=QC_Status, y=N_Cells, x=Sample)) + 
+    geom_bar(position="dodge", stat="identity") + geom_text(aes(label=N_Cells), position=position_dodge(width=0.9), vjust=-0.25)
+mute <- dev.off()
+ggplot(NCellDF, aes(fill=QC_Status, y=N_Cells, x=Sample)) + 
+    geom_bar(position="dodge", stat="identity") + geom_text(aes(label=N_Cells), position=position_dodge(width=0.9), vjust=-0.25)
+scrna.list <- SplitObject(scrna.combined_prefilter, split.by = "sample_id")
 # Prefilter
 plots <- list()
 for (sample in samples){
-     plots[[sample]] <- snrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
+     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
      geom_point() + 
      scale_colour_gradient(low = "gray90", high = "black") +
      stat_smooth(method=lm) +
@@ -320,10 +338,10 @@ print(plots)
 
 
 # Postfilter
-snrna.list <- SplitObject(so_postfilter , split.by = "sample_id")
+scrna.list <- SplitObject(so_postfilter , split.by = "sample_id")
 plots <- list()
 for (sample in samples){
-     plots[[sample]] <- snrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
+     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
      geom_point() + 
      scale_colour_gradient(low = "gray90", high = "black") +
      stat_smooth(method=lm) +
@@ -337,18 +355,15 @@ for (sample in samples){
 
 pdf(paste0(out_dir,"postfilter_scatter.pdf"))
 print(plots)
-
 mute <- dev.off()
 print(plots)
 ```
 
 <a  id="Ribosomal_Percentage"></a> 
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
-# ribo
-# Prefilter
 plots <- list()
 for (sample in samples){
-     plots[[sample]] <- snrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
+     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
      geom_point() + 
      scale_colour_gradient(low = "gray90", high = "black") +
      stat_smooth(method=lm) +
@@ -368,7 +383,7 @@ print(plots)
 # Postfilter
 plots <- list()
 for (sample in samples){
-     plots[[sample]] <- snrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
+     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
      geom_point() + 
      scale_colour_gradient(low = "gray90", high = "black") +
      stat_smooth(method=lm) +
@@ -455,7 +470,6 @@ scrna.combined <- RunPCA(scrna.combined, npcs = 30, verbose = FALSE)
            
 ```
 <a  id="elbow_plot"></a> 
-### Linear Dimensionality Reduction 
 ```{r, echo=FALSE,results='hide',fig.keep='all'}
     pdf(paste0(out_dir, "ElbowPlot.pdf"))
     p1 <- ElbowPlot(scrna.combined) + ggtitle("Integrated") + theme(aspect.ratio=5/10) + theme(plot.margin = unit(c(6, 6, 6, 6), "cm"))
@@ -463,7 +477,6 @@ scrna.combined <- RunPCA(scrna.combined, npcs = 30, verbose = FALSE)
     dev.off()
 ```
 <a  id="UMAP_Resolution"></a> 
-### UMAP - Resolutions
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 # Continue on analysis
 scrna.combined <- FindNeighbors(scrna.combined, dims = 1:30, k.param = 60, prune.SNN = 1/15)
@@ -546,7 +559,107 @@ write.table(top50, paste0(out_dir, "FindAllMarkers.clusters.top50.xls"), sep = "
 topN <- Extract_Top_Markers(scrna.markers, num_genes = 25, named_vector = FALSE, make_unique = TRUE, gene_column = "geneSymbol")
         
 ```
+<a  id="mgt"></a> 
+```{r, echo=FALSE,results='hide',fig.keep='all'}
+scrna.markers_sig <- scrna.markers[scrna.markers$p_val_adj <= 0.05,]            
+# Create Interactive Table
+if (species == "Mus musculus"){
+tibble::as_tibble(unique(scrna.markers_sig)) %>% dplyr::arrange(p_val_adj) -> scrna.markers_sig
+scrna.markers_sig = scrna.markers_sig %>% dplyr::select(cluster, geneSymbol, p_val, avg_log2FC,
+                                             p_val_adj,pct.1,pct.2,geneID)
+final_df <- data.frame(           "cluster"    = scrna.markers_sig$cluster,
+                                  "gene"       = scrna.markers_sig$geneSymbol,
+                                  "p_val"      = scrna.markers_sig$p_val,
+                                  "avg_log2FC" = scrna.markers_sig$avg_log2FC,
+                                  "p_val_adj"  = scrna.markers_sig$p_val_adj,
+                                  "pct.1"      = scrna.markers_sig$pct.1,
+                                  "pct.2"      = scrna.markers_sig$pct.2,
+                                  "MGI_ID" = paste0("<a  href='https://www.informatics.jax.org/quicksearch/summary?queryType=exactPhrase&query=",scrna.markers_sig$geneID,"'>", scrna.markers_sig$geneID,"</a>"))
 
+DT::datatable(final_df,class = 'cell-border stripe',rownames=F,filter='top',
+              editable = TRUE, extensions = 'Buttons', options = list(
+                dom = 'Bfrtip',
+                buttons = c('copy','csv','excel','pdf','print')
+              ),escape = FALSE)
+}
+if (species == "Drosophila Melanogaster"){
+as_tibble(unique(scrna.markers_sig)) %>% arrange(p_val_adj) -> scrna.markers_sig
+scrna.markers_sig = scrna.markers_sig %>% dplyr::select(cluster, geneSymbol, p_val, avg_log2FC,
+                                             p_val_adj,pct.1,pct.2,geneID)
+final_df <- data.frame(           "cluster"    = scrna.markers_sig$cluster,
+                                  "gene"       = scrna.markers_sig$geneSymbol,
+                                  "p_val"      = scrna.markers_sig$p_val,
+                                  "avg_log2FC" = scrna.markers_sig$avg_log2FC,
+                                  "p_val_adj"  = scrna.markers_sig$p_val_adj,
+                                  "pct.1"      = scrna.markers_sig$pct.1,
+                                  "pct.2"      = scrna.markers_sig$pct.2,
+                                  "FlyBase_ID" = paste0("<a  href='https://flybase.org/reports/",scrna.markers_sig$geneID,"'>", scrna.markers_sig$geneID,"</a>"))
+
+DT::datatable(final_df,class = 'cell-border stripe',rownames=F,filter='top',
+              editable = TRUE, extensions = 'Buttons', options = list(
+                dom = 'Bfrtip',
+                buttons = c('copy','csv','excel','pdf','print')
+              ),escape = FALSE)
+}
+            
+if (species == "Homo Sapiens"){
+# Create Interactive Table
+tibble::as_tibble(unique(scrna.markers_sig)) %>% dplyr::arrange(p_val_adj) -> scrna.markers_sig
+scrna.markers_sig = scrna.markers_sig %>% dplyr::select(cluster, geneSymbol, p_val, avg_log2FC,
+                                             p_val_adj,pct.1,pct.2,geneID)
+final_df <- data.frame(           "cluster"    = scrna.markers_sig$cluster,
+                                  "gene"       = scrna.markers_sig$geneSymbol,
+                                  "p_val"      = scrna.markers_sig$p_val,
+                                  "avg_log2FC" = scrna.markers_sig$avg_log2FC,
+                                  "p_val_adj"  = scrna.markers_sig$p_val_adj,
+                                  "pct.1"      = scrna.markers_sig$pct.1,
+                                  "pct.2"      = scrna.markers_sig$pct.2,
+                                  "GeneCards" = paste0("<a  href='https://www.genecards.org/Search/Keyword?queryString=",scrna.markers_sig$geneID,"'>", scrna.markers_sig$geneID,"</a>"))
+
+DT::datatable(final_df,class = 'cell-border stripe',rownames=F,filter='top',
+              editable = TRUE, extensions = 'Buttons', options = list(
+                dom = 'Bfrtip',
+                buttons = c('copy','csv','excel','pdf','print')
+              ),escape = FALSE)
+}
+            
+```
+<a  id="fp"></a> 
+```{r echo=FALSE,message=FALSE}
+# Feature plot
+pdf(paste0(out_dir, "combined.top25markers.pdf"))
+ggp = list()
+for (marker in topN){
+    ggp[[marker]]=FeaturePlot(scrna.combined, features=marker)
+    print(ggp[[marker]])
+}
+dev.off()
+
+
+#DoHeatmap(scrna.combined, features = topN$geneID, size = 2, draw.lines = T, angle = 45, hjust = 0.2) + theme(axis.text.y = element_text(size = 5)) + NoLegend() + scale_y_discrete(breaks=topN$geneID,
+#        labels=geneTable$geneSymbol[match(topN$geneID, geneTable$geneID)])
+#ggsave(paste0(out_dir, "top25markers.heatmap.integrated.geneSymbol.pdf"), width = 8, height = 12)
+#  
+```
+
+```{r echo=FALSE,message=FALSE}
+remove_markers <- setdiff(markers,row.names(scrna.combined))
+markers <- markers[!markers%in%remove_markers]
+markers <- unique(markers)
+pdf(paste0(out_dir, "combined.markers.geneSymbol.pdf"))
+ggp = list()
+for (marker in markers){
+    ggp[[marker]]=FeaturePlot(scrna.combined, features=marker) + ggtitle(marker)
+    print(ggp[[marker]])
+}
+dev.off()
+  
+pdf(paste0(out_dir, "combined.dotplot.geneSymbol.pdf"), width = 30, height = 10)
+p1 <- scCustomize::DotPlot_scCustom(scrna.combined, features = markers, x_lab_rotate = TRUE) + scale_x_discrete(breaks= markers)
+print(p1)
+dev.off()
+      
+```
  ---  
 
 scRNA seq report well module v.`r {scrna_seq_sample_module_version}`, Brigham and Women's Bioinformatics and Genomics Hub  

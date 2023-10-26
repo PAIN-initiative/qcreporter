@@ -179,7 +179,7 @@ pdf(paste0(out_dir,"prefilter_n_cells.pdf"),onefile=TRUE,height=10,width=15)
 ggplot(data = n_cells_df, aes(x=samples,y = as.integer(NCells),fill = samples)) + geom_bar(stat="identity") + geom_text(aes(label=NCells), position=position_dodge(width=0.9), vjust=-0.25) + ggtitle("Number of Cells") 
 mute <- dev.off()
 ```
-```{r echo=FALSE,message=FALSE}
+```{r echo=FALSE,message=FALSE,include=FALSE}
 ### Doublet Finder
 # grab number of cells
 n_cells = list()

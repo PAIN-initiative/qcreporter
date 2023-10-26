@@ -12,10 +12,10 @@ stm("Starting snRNA Cluster Annotation Module")
 
 ### Contents 
 #### [QC Seurat Object](#seurat_qc)
-  - [Mitochondrial Percentage)](#Mitochondrial_Percentage)
-  - [Ribosomal Percentage)](#Ribosomal_Percentage)
-  - [UMIs Transcripts per Cell)](#UMIs_transcripts_per_cell)
-  - [Genes per Cell)](#Genes_Per_Cell)
+  - [Mitochondrial Percentage](#Mitochondrial_Percentage)
+  - [Ribosomal Percentage](#Ribosomal_Percentage)
+  - [UMIs Transcripts per Cell](#UMIs_transcripts_per_cell)
+  - [Genes per Cell](#Genes_Per_Cell)
   - [UMAP-Resoultion](#UMAP_Resolution)
   - [UMAP-Sample](#UMAP_Sample)
   - [Marker Gene Table](#mgt) 
@@ -128,9 +128,9 @@ C[[sample]] <- Matrix::t(Matrix::t(C[[sample]])/Matrix::colSums(C[[sample]])) * 
 most_expressed[[sample]] <- order(apply(C[[sample]], 1, median), decreasing = T)[20:1]
 }
 most_expressed_plots = list()
-# most_expressed_plots[[sample]] <- 
+
 for (sample in samples){
-    pdf(paste0(out_dir,sample,"_most_expressed_genes.pdf"))
+    most_expressed_plots[[sample]] <- pdf(paste0(out_dir,sample,"_most_expressed_genes.pdf"))
     boxplot(as.matrix(t(C[[sample]][most_expressed[[sample]], ])), cex = 0.1, las = 1, xlab = "% total count per cell",
     col = (scales::hue_pal())(20)[20:1], horizontal = TRUE)
     dev.off()
@@ -298,70 +298,91 @@ dev.off()
 ### QC Plots
 <a  id="Mitochondrial_Percentage"></a> 
 ```{r, echo=FALSE,results='hide',fig.keep='all'}
-# mito
-prefilter_qc_mito <- metadata_prefilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
-geom_point() + 
-scale_colour_gradient(low = "gray90", high = "black") +
-stat_smooth(method=lm) +
-scale_x_log10() +
-scale_y_log10() + 
-theme_classic() +
-geom_vline(xintercept = 500) +
-geom_hline(yintercept = 300) +
-facet_wrap(~sample_id) + 
-ggtitle("Prefilter Mitochondrial Percentage")
+snrna.list <- SplitObject(snrna.combined_prefilter , split.by = "sample_id")
+# Prefilter
+plots <- list()
+for (sample in samples){
+     plots[[sample]] <- snrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
+     geom_point() + 
+     scale_colour_gradient(low = "gray90", high = "black") +
+     stat_smooth(method=lm) +
+     scale_x_log10() +
+     scale_y_log10() + 
+     theme_classic() +
+     geom_vline(xintercept = 500) +
+     geom_hline(yintercept = 300) +
+     facet_wrap(~sample_id) + ggtitle("Prefilter Mitochondrial Percentage")
+}
 
-postfilter_qc_mito <- metadata_postfilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
-geom_point() + 
-scale_colour_gradient(low = "gray90", high = "black") +
-stat_smooth(method=lm) +
-scale_x_log10() +
-scale_y_log10() + 
-theme_classic() +
-geom_vline(xintercept = 500) +
-geom_hline(yintercept = 300) +
-facet_wrap(~sample_id) + 
-ggtitle("Postfilter Mitochondrial Percentag")
-
-p <- ggarrange(prefilter_qc_mito,postfilter_qc_mito,ncol=1,nrow=2,widths = 25,heights = 30)
-pdf(paste0(out_dir,"mito_percentage.pdf"))
-p
+pdf(paste0(out_dir,"prefilter_scatter.pdf"))
+plots
 dev.off()
-p
+plots
+
+# Postfilter
+snrna.list <- SplitObject(postfilter , split.by = "sample_id")
+plots <- list()
+for (sample in samples){
+     plots[[sample]] <- snrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
+     geom_point() + 
+     scale_colour_gradient(low = "gray90", high = "black") +
+     stat_smooth(method=lm) +
+     scale_x_log10() +
+     scale_y_log10() + 
+     theme_classic() +
+     geom_vline(xintercept = 500) +
+     geom_hline(yintercept = 300) +
+     facet_wrap(~sample_id) + ggtitle("Postfilter Mitochondrial Percentage")
+}
+
+pdf(paste0(out_dir,"postfilter_scatter.pdf"))
+plots
+dev.off()
+plots
 ```
 
 <a  id="Ribosomal_Percentage"></a> 
 ```{r, echo=FALSE,results='hide',fig.keep='all'}
 # ribo
-prefilter_qc_ribo <- metadata_prefilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
-geom_point() + 
-scale_colour_gradient(low = "gray90", high = "black") +
-stat_smooth(method=lm) +
-scale_x_log10() +
-scale_y_log10() + 
-theme_classic() +
-geom_vline(xintercept = 500) +
-geom_hline(yintercept = 300) +
-facet_wrap(~sample_id) +
-ggtitle("Prefilter Ribosomal Percentage")
+# Prefilter
+plots <- list()
+for (sample in samples){
+     plots[[sample]] <- snrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
+     geom_point() + 
+     scale_colour_gradient(low = "gray90", high = "black") +
+     stat_smooth(method=lm) +
+     scale_x_log10() +
+     scale_y_log10() + 
+     theme_classic() +
+     geom_vline(xintercept = 500) +
+     geom_hline(yintercept = 300) +
+     facet_wrap(~sample_id) + ggtitle("Prefilter Mitochondrial Percentage")
+}
 
-postfilter_qc_ribo <- metadata_postfilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
-geom_point() + 
-scale_colour_gradient(low = "gray90", high = "black") +
-stat_smooth(method=lm) +
-scale_x_log10() +
-scale_y_log10() + 
-theme_classic() +
-geom_vline(xintercept = 500) +
-geom_hline(yintercept = 300) +
-facet_wrap(~sample_id) +
-ggtitle("Postfilter Ribosomal Percentage")
-
-p <- ggarrange(prefilter_qc_ribo,postfilter_qc_ribo,ncol=1,nrow=2,widths = 25,heights = 30)
-pdf(paste0(out_dir,"ribo_percentage.pdf"))
-p
+pdf(paste0(out_dir,"prefilter_scatter.pdf"))
+plots
 dev.off()
-p
+plots
+
+# Postfilter
+plots <- list()
+for (sample in samples){
+     plots[[sample]] <- snrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
+     geom_point() + 
+     scale_colour_gradient(low = "gray90", high = "black") +
+     stat_smooth(method=lm) +
+     scale_x_log10() +
+     scale_y_log10() + 
+     theme_classic() +
+     geom_vline(xintercept = 500) +
+     geom_hline(yintercept = 300) +
+     facet_wrap(~sample_id) + ggtitle("Postfilter Mitochondrial Percentage")
+}
+
+pdf(paste0(out_dir,"postfilter_scatter.pdf"))
+plots
+dev.off()
+plots
 ```
 <a  id="UMIs_transcripts_per_cell"></a> 
 ```{r, echo=FALSE,results='hide',fig.keep='all'}

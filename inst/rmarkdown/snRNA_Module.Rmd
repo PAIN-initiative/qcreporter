@@ -12,11 +12,13 @@ stm("Starting snRNA Cluster Annotation Module")
 
 ### Contents 
 #### [QC Seurat Object](#seurat_qc)
-  - [Principal Component Plot (Elbow Plot)](#elbow_plot)
-  - [QC](#QC)
-  - [UMAP-Treatments](#UMAP)
+  - [Mitochondrial Percentage)](#Mitochondrial_Percentage)
+  - [Ribosomal Percentage)](#Ribosomal_Percentage)
+  - [UMIs Transcripts per Cell)](#UMIs_transcripts_per_cell)
+  - [Genes per Cell)](#Genes_Per_Cell)
+  - [UMAP-Resoultion](#UMAP_Resolution)
+  - [UMAP-Sample](#UMAP_Sample)
   - [Marker Gene Table](#mgt) 
-  - [UMAP with Cell Annotations](#cell_type_annotation)
 <details style="color: lightgray;">  
   <summary>Expand Code</summary> 
 
@@ -442,7 +444,7 @@ snrna.combined <- RunPCA(snrna.combined, npcs = 30, verbose = FALSE)
     dev.off()
 
 ```
-<a  id="UMAP_Resolutions"></a> 
+<a  id="UMAP_Resolution"></a> 
 ### UMAP - Resolutions
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 # Continue on analysis
@@ -479,7 +481,10 @@ res_2
 meta <- snrna.combined@meta.data
 Idents(snrna.combined) <- resolution
 rm(snrna.list)
-
+```
+<a  id="UMAP_Sample"></a> 
+### UMAP - Sample
+```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 p1 <- DimPlot(snrna.combined, reduction = "umap", group.by = "sample_id")
 pdf(file=paste0(out_dir, "combined.umap.colorBySample.pdf"))
 print(p1 + coord_fixed())
@@ -489,12 +494,10 @@ p2 <- DimPlot(snrna.combined, reduction = "umap", label = TRUE, repel = TRUE)
 pdf(paste0(out_dir, "combined.umap.colorByCluster.pdf"))
 print(p2 + coord_fixed())
 dev.off()
-print(p2 + coord_fixed())
 p4 <- DimPlot(snrna.combined, reduction = "umap", group.by = "treatment")
 pdf(file=paste0(out_dir, "combined.umap.colorByTreatment.pdf"))
 print(p4 + coord_fixed())
 dev.off() 
-print(p4 + coord_fixed())
 saveRDS(snrna.combined, paste0(out_dir, "snrna.combined_postfilter.seurat.", projectName, ".rds"))
 ```
 

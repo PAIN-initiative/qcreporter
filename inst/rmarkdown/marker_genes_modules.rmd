@@ -559,7 +559,7 @@ topN <- Extract_Top_Markers(scrna.markers, num_genes = 25, named_vector = FALSE,
         
 ```
 <a  id="mgt"></a> 
-```{r, echo=FALSE,results='hide',fig.keep='all'}
+```{r, echo=FALSE,message=FALSE}
 scrna.markers_sig <- scrna.markers[scrna.markers$p_val_adj <= 0.05,]            
 # Create Interactive Table
 if (species == "Mus musculus"){

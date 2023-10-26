@@ -264,7 +264,6 @@ so_postfilter <- Merge_Seurat_List(snrna.list,
                                               add.cell.ids = NULL,
                                               merge.data = TRUE,
                                               project = "sample_id")
-saveRDS(so_postfilter,paste0(out_dir,"so_postfilter.rds"))
 metadata_postfilter <- so_postfilter@meta.data
 
 metadata_postfilter_list <- list()

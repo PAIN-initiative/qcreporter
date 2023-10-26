@@ -11,10 +11,13 @@ stm("Starting scRNA Cluster Annotation Module")
 
 ### Contents 
 #### [QC Seurat Object](#seurat_qc)
-  - [Principal Component Plot (Elbow Plot)](#elbow_plot)
-  - [UMAP-Treatments](#UMAP)
+  - [Mitochondrial Percentage)](#Mitochondrial_Percentage)
+  - [Ribosomal Percentage)](#Ribosomal_Percentage)
+  - [UMIs Transcripts per Cell)](#UMIs_transcripts_per_cell)
+  - [Genes per Cell)](#Genes_Per_Cell)
+  - [UMAP-Resoultion](#UMAP_Resolution)
+  - [UMAP-Sample](#UMAP_Sample)
   - [Marker Gene Table](#mgt) 
-  - [UMAP with Cell Annotations](#cell_type_annotation)
 <details style="color: lightgray;">  
   <summary>Expand Code</summary> 
 
@@ -387,7 +390,7 @@ UMIs_transcripts_per_cell_postfilter <- metadata_postfilter %>%
 
 ggarrange(UMIs_transcripts_per_cell_prefilter,UMIs_transcripts_per_cell_postfilter,ncol=1,nrow=2,widths = 10,heights = 8)
 ```
-<a  id="Genes Per Cell"></a> 
+<a  id="Genes_Per_Cell"></a> 
 ```{r echo=FALSE,message=FALSE}
 genes_per_cell_pre <- metadata_prefilter %>% 
   	ggplot(aes(color=sample_id, x=nCount_RNA, fill=sample_id )) + 
@@ -440,7 +443,7 @@ scrna.combined <- RunPCA(scrna.combined, npcs = 30, verbose = FALSE)
 
 
 ```
-<a  id="UMAP_Resolutions"></a> 
+<a  id="UMAP_Resolution"></a> 
 ### UMAP - Resolutions
 ```{r echo=FALSE,message=FALSE}
 # Continue on analysis
@@ -477,7 +480,11 @@ res_2
 meta <- scrna.combined@meta.data
 Idents(scrna.combined) <- resolution
 rm(scrna.list)
-
+```
+```
+<a  id="UMAP_Sample"></a> 
+### UMAP - Samples
+```{r echo=FALSE,message=FALSE}
 p1 <- DimPlot(scrna.combined, reduction = "umap", group.by = "sample_id")
 pdf(file=paste0(out_dir, "combined.umap.colorBySample.pdf"))
 print(p1 + coord_fixed())
@@ -487,12 +494,10 @@ p2 <- DimPlot(scrna.combined, reduction = "umap", label = TRUE, repel = TRUE)
 pdf(paste0(out_dir, "combined.umap.colorByCluster.pdf"))
 print(p2 + coord_fixed())
 dev.off()
-print(p2 + coord_fixed())
 p4 <- DimPlot(scrna.combined, reduction = "umap", group.by = "treatment")
 pdf(file=paste0(out_dir, "combined.umap.colorByTreatment.pdf"))
 print(p4 + coord_fixed())
 dev.off() 
-print(p4 + coord_fixed())
 saveRDS(scrna.combined, paste0(out_dir, "scrna.combined_postfilter.seurat.", projectName, ".rds"))
 ```
 

@@ -100,7 +100,8 @@ snrna.combined_prefilter <- Merge_Seurat_List(snrna.list,
 metadata_prefilter <- snrna.combined_prefilter@meta.data
 # Save Prefilter
 saveRDS(snrna.combined_prefilter, paste0(out_dir, "snrna.combined_prefilter.seurat.", projectName, ".rds"))
-                   
+mito_cutoff = percent_mito
+ribo_cutoff = percent_ribo                   
 # Detection based filtering
 # 300 detected genes and the genes need to be expressesd in atleast 3 cells.
 selected_c <- WhichCells(snrna.combined_prefilter, expression = nFeature_RNA > 300)

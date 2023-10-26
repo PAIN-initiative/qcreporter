@@ -133,7 +133,7 @@ for (sample in samples){
     most_expressed_plots[[sample]] <- pdf(paste0(out_dir,sample,"_most_expressed_genes.pdf"))
     boxplot(as.matrix(t(C[[sample]][most_expressed[[sample]], ])), cex = 0.1, las = 1, xlab = "% total count per cell",
     col = (scales::hue_pal())(20)[20:1], horizontal = TRUE)
-    dev.off()
+    mute <- dev.off()
 }
 
     # Filter MALAT1
@@ -154,13 +154,6 @@ if (filter_RIBO == TRUE){
   snrna.list[[sample]] <- snrna.list[[sample]][!grepl("^RP[LS]|Rp[LS]", rownames(snrna.list[[sample]])), ]
   }
 }
-
-# merge list of prefiltered Seurat
-snrna.combined_prefilter <- Merge_Seurat_List(snrna.list,
-                                              add.cell.ids = NULL,
-                                              merge.data = TRUE,
-                                              project = "sample_id")
-saveRDS(snrna.combined_prefilter,paste0(out_dir,'snrna.combined_prefilter.rds')) # Note this is after removing cells with > 0 % Mitochondrial Transcripts.
 
 # metadata variable
 metadata_prefilter <- snrna.combined_prefilter@meta.data
@@ -184,7 +177,7 @@ n_cells_df <- as.data.frame(cbind(samples,NCells))
 
 pdf(paste0(out_dir,"prefilter_n_cells.pdf"),onefile=TRUE,height=10,width=15)
 ggplot(data = n_cells_df, aes(x=samples,y = as.integer(NCells),fill = samples)) + geom_bar(stat="identity") + geom_text(aes(label=NCells), position=position_dodge(width=0.9), vjust=-0.25) + ggtitle("Number of Cells") 
-dev.off()
+mute <- dev.off()
 
 ### Doublet Finder
 # grab number of cells
@@ -245,7 +238,7 @@ for (sample in samples){
 for (sample in samples){
     pdf(paste0(out_dir,sample,"_DoubletFinder_UMAP_Plot.pdf"),width=15,height=15,onefile=TRUE)
     print(UMAP_plots[[sample]])
-    dev.off()
+    mute <- dev.off()
 }
 
 VlnPlots = list()
@@ -256,7 +249,7 @@ VlnPlots[[sample]] <- VlnPlot(snrna.list[[sample]], features = "nFeature_RNA", g
 for (sample in samples){
     pdf(paste0(out_dir,sample,"_DoubletFinder_VlnPlot.pdf"),width=15,height=15,onefile=TRUE)
     print(VlnPlots[[sample]])
-    dev.off()
+    mute <- dev.off()
 }
 
 # Remove the Doublet Cells
@@ -292,13 +285,13 @@ n_cells_df <- as.data.frame(cbind(samples,NCells))
 
 pdf(paste0(out_dir,"postfilter_n_cells.pdf"),onefile=TRUE,height=10,width=15)
 ggplot(data = n_cells_df, aes(x = samples,y = as.integer(NCells),fill = samples)) + geom_bar(stat="identity") + geom_text(aes(label=NCells), position=position_dodge(width=0.9), vjust=-0.25) + ggtitle("Number of Cells") 
-dev.off()
+mute <- dev.off()
 ```
 
-### QC Plots
+### Mitochondrial Percentage Plots
 <a  id="Mitochondrial_Percentage"></a> 
-```{r, echo=FALSE,results='hide',fig.keep='all'}
-snrna.list <- SplitObject(snrna.combined_prefilter , split.by = "sample_id")
+```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
+snrna.list <- SplitObject(snrna.combined_prefilter, split.by = "sample_id")
 # Prefilter
 plots <- list()
 for (sample in samples){
@@ -315,9 +308,10 @@ for (sample in samples){
 }
 
 pdf(paste0(out_dir,"prefilter_scatter.pdf"))
-plots
-dev.off()
-plots
+print(plots + coord_fixed())
+mute <- dev.off()
+print(plots + coord_fixed())
+
 
 # Postfilter
 snrna.list <- SplitObject(so_postfilter , split.by = "sample_id")
@@ -336,13 +330,15 @@ for (sample in samples){
 }
 
 pdf(paste0(out_dir,"postfilter_scatter.pdf"))
-plots
-dev.off()
-plots
-```
+print(plots + coord_fixed())
 
+mute <- dev.off()
+print(plots + coord_fixed())
+
+```
+### Ribosomal Percentage Plots
 <a  id="Ribosomal_Percentage"></a> 
-```{r, echo=FALSE,results='hide',fig.keep='all'}
+```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 # ribo
 # Prefilter
 plots <- list()
@@ -356,13 +352,13 @@ for (sample in samples){
      theme_classic() +
      geom_vline(xintercept = 500) +
      geom_hline(yintercept = 300) +
-     facet_wrap(~sample_id) + ggtitle("Prefilter Mitochondrial Percentage")
+     facet_wrap(~sample_id) + ggtitle("Prefilter Ribo Percentage")
 }
 
 pdf(paste0(out_dir,"prefilter_scatter.pdf"))
-plots
-dev.off()
-plots
+print(plots + coord_fixed())
+mute <- dev.off()
+print(plots + coord_fixed())
 
 # Postfilter
 plots <- list()
@@ -376,16 +372,17 @@ for (sample in samples){
      theme_classic() +
      geom_vline(xintercept = 500) +
      geom_hline(yintercept = 300) +
-     facet_wrap(~sample_id) + ggtitle("Postfilter Mitochondrial Percentage")
+     facet_wrap(~sample_id) + ggtitle("Postfilter Ribo Percentage")
 }
 
 pdf(paste0(out_dir,"postfilter_scatter.pdf"))
-plots
-dev.off()
-plots
+print(plots + coord_fixed())
+mute <- dev.off()
+print(plots + coord_fixed())
 ```
+### UMI Transcript Plots
 <a  id="UMIs_transcripts_per_cell"></a> 
-```{r, echo=FALSE,results='hide',fig.keep='all'}
+```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 UMIs_transcripts_per_cell_prefilter <- metadata_prefilter %>% 
   	ggplot(aes(color=sample_id, x=nCount_RNA, fill= sample_id)) + 
   	geom_density(alpha = 0.2) + 
@@ -406,12 +403,15 @@ UMIs_transcripts_per_cell_postfilter <- metadata_postfilter %>%
 
 p <- ggarrange(UMIs_transcripts_per_cell_prefilter,UMIs_transcripts_per_cell_postfilter,ncol=1,nrow=2,widths = 25,heights = 30)
 pdf(paste0(out_dir,"UMI_Transcripts_Per_Cell.pdf"))
-p
-dev.off()
-p
+print(p + coord_fixed())
+
+mute <- dev.off()
+print(p + coord_fixed())
+
 ```
+### Genes Per Cell Plots
 <a  id="Genes Per Cell"></a> 
-```{r, echo=FALSE,results='hide',fig.keep='all'}
+```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 genes_per_cell_pre <- metadata_prefilter %>% 
   	ggplot(aes(color=sample_id, x=nCount_RNA, fill=sample_id )) + 
   	geom_density(alpha = 0.2) + 
@@ -430,25 +430,26 @@ genes_per_cell_post <- metadata_postfilter %>%
 
 p <- ggarrange(genes_per_cell_pre,genes_per_cell_post,ncol=1,nrow=2,widths = 10,heights = 8)
 pdf(paste0(out_dir,"Genes_Per_Cell.pdf"))
-p
-dev.off()
-p
+print(p + coord_fixed())
+mute <- dev.off()
+print(p + coord_fixed())
+
 
 ```
 [Return to Contents](#snrna_seq_sample_top) 
-```{r, echo=FALSE,results='hide',fig.keep='all'}
+```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 # Integration
 # normalize and identify variable features for each dataset independently
 snrna.list <- SplitObject(so_postfilter, split.by = "sample_id")
 snrna.list <- lapply(X = snrna.list, FUN = function(x) {
-    x <- NormalizeData(x)
-    x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
+    x <- NormalizeData(x,verbose=FALSE)
+    x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000,verbose=FALSE)
 })
 # select features that are repeatedly variable across datasets for integration
 features <- SelectIntegrationFeatures(object.list = snrna.list)
 # Perform integration
-snrna.anchors <- FindIntegrationAnchors(object.list = snrna.list, anchor.features = features)
-snrna.combined <- IntegrateData(anchorset = snrna.anchors, dims = 1:30, new.assay.name = "CCA")
+snrna.anchors <- FindIntegrationAnchors(object.list = snrna.list, anchor.features = features,verbose=FALSE)
+snrna.combined <- IntegrateData(anchorset = snrna.anchors, dims = 1:30, new.assay.name = "CCA",verbose=FALSE)
 rm(snrna.anchors)
 # Perform an integrated analysis
 DefaultAssay(snrna.combined) <- "CCA"
@@ -457,16 +458,15 @@ snrna.combined <- RunPCA(snrna.combined, npcs = 30, verbose = FALSE)
            
 ```
 <a  id="elbow_plot"></a> 
-### Linear Dimensionality Reduction 
 ```{r, echo=FALSE,results='hide',fig.keep='all'}
     pdf(paste0(out_dir, "ElbowPlot.pdf"))
     p1 <- ElbowPlot(snrna.combined) + ggtitle("Integrated") + theme(aspect.ratio=5/10) + theme(plot.margin = unit(c(6, 6, 6, 6), "cm"))
     print(p1 + coord_fixed())
-    dev.off()
+    mute <- dev.off()
 
 ```
+### UMAP Resolution
 <a  id="UMAP_Resolution"></a> 
-### UMAP - Resolutions
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 # Continue on analysis
 snrna.combined <- FindNeighbors(snrna.combined, dims = 1:30, k.param = 60, prune.SNN = 1/15)
@@ -474,31 +474,31 @@ snrna.combined <- FindClusters(snrna.combined, graph.name = "CCA_snn", resolutio
 snrna.combined <- RunUMAP(snrna.combined, reduction = "pca", dims = 1:30,verbose=FALSE)
 res_0.5 <- DimPlot(snrna.combined, group.by = "CCA_snn_res.0.5", label = TRUE)
 pdf(paste0(out_dir, "res_0.5.pdf"))
-print(res_0.5)
-dev.off()
-res_0.5
+print(res_0.5 + coord_fixed())
+mute <- dev.off()
+print(res_0.5 + coord_fixed())
 res_0.7 <- DimPlot(snrna.combined, group.by = "CCA_snn_res.0.7", label = TRUE)
 pdf(paste0(out_dir, "res_0.7.pdf"))
-print(res_0.7)
-dev.off()
+print(res_0.7 + coord_fixed())
+mute <- dev.off()
 res_1 <- DimPlot(snrna.combined, group.by = "CCA_snn_res.1", label = TRUE)
 pdf(paste0(out_dir, "res_1.pdf"))
-print(res_1)
-dev.off()
-res_1
+print(res_1 + coord_fixed())
+mute <- dev.off()
+print(res_1 + coord_fixed())
 res_1.2 <- DimPlot(snrna.combined, group.by = "CCA_snn_res.1.2", label = TRUE)
 pdf(paste0(out_dir, "res_1.2.pdf"))
-print(res_1.2)
-dev.off()
+print(res_1.2 + coord_fixed())
+mute <- dev.off()
 res_1.4 <- DimPlot(snrna.combined, group.by = "CCA_snn_res.1.4", label = TRUE)
 pdf(paste0(out_dir, "res_1.4.pdf"))
-print(res_1.4) 
-dev.off()
+print(res_1.4 + coord_fixed())
+mute <- dev.off()
 res_2 <- DimPlot(snrna.combined, group.by = "CCA_snn_res.2", label = TRUE)
 pdf(paste0(out_dir, "res_2.pdf"))
-print(res_2)
-dev.off()
-res_2
+print(res_2 + coord_fixed())
+mute <- dev.off()
+print(res_2 + coord_fixed())
 meta <- snrna.combined@meta.data
 Idents(snrna.combined) <- resolution
 rm(snrna.list)
@@ -509,44 +509,21 @@ rm(snrna.list)
 p1 <- DimPlot(snrna.combined, reduction = "umap", group.by = "sample_id")
 pdf(file=paste0(out_dir, "combined.umap.colorBySample.pdf"))
 print(p1 + coord_fixed())
-dev.off()
+mute <- dev.off()
 print(p1 + coord_fixed())
 p2 <- DimPlot(snrna.combined, reduction = "umap", label = TRUE, repel = TRUE)
 pdf(paste0(out_dir, "combined.umap.colorByCluster.pdf"))
 print(p2 + coord_fixed())
-dev.off()
+mute <- dev.off()
 p4 <- DimPlot(snrna.combined, reduction = "umap", group.by = "treatment")
 pdf(file=paste0(out_dir, "combined.umap.colorByTreatment.pdf"))
 print(p4 + coord_fixed())
-dev.off() 
+mute <- dev.off() 
 saveRDS(snrna.combined, paste0(out_dir, "snrna.combined_postfilter.seurat.", projectName, ".rds"))
 ```
 
 [Return to Contents](#snrna_seq_sample_top) 
 
-```{r echo=FALSE,message=FALSE}
-# Clustering
-snrna.combined <- FindNeighbors(snrna.combined, dims = 1:30, k.param = 60, prune.SNN = 1/15)
-# Clustering with louvain (algorithm 1)
-snrna.combined <- FindClusters(snrna.combined, graph.name = "CCA_snn", resolution = seq(0.5,3,by=0.1),algorithm = alg,verbose=FALSE)
-snrna.combined <- RunUMAP(snrna.combined, reduction = "pca", dims = 1:20, n.components = 2, n.neighbors = 30,
-    n.epochs = 200, min.dist = 0.3, learning.rate = 1, spread = 1)
-res_0.5 <-  scCustomize::DimPlot_scCustom(snrna.combined, group.by = "CCA_snn_res.0.5", label = TRUE) + ggtitle("louvain_0.5")
-res_1   <- scCustomize::DimPlot_scCustom(snrna.combined, group.by = "CCA_snn_res.1", label = TRUE) + ggtitle("louvain_1")
-res_2   <- scCustomize::DimPlot_scCustom(snrna.combined, group.by = "CCA_snn_res.2", label = TRUE) + ggtitle("louvain_2")
-pdf(paste0(out_dir,"resolution_snn_res_0.5.pdf"))
-res_0.5
-dev.off()
-pdf(paste0(out_dir,"resolution_snn_res_res_1.pdf"))
-res_1
-dev.off()
-pdf(paste0(out_dir,"resolution_snn_res_res_2.pdf"))
-res_2
-dev.off()
-
-# Save Data
-saveRDS(snrna.combined,paste0(out_dir,"snRNA_postfilter_int_cl.rds"))
-```
 ```{r echo=FALSE,message=FALSE}
 # Set the identity as louvain with resolution 0.5
 meta <- snrna.combined@meta.data
@@ -581,7 +558,7 @@ for (marker in topN){
     ggp[[marker]]=FeaturePlot(snrna.combined, features=marker)
     print(ggp[[marker]])
 }
-dev.off()
+mute <- dev.off()
 # Dotplot
 remove_markers <- setdiff(markers,row.names(snrna.combined))
 markers <- markers[!markers%in%remove_markers]
@@ -593,12 +570,12 @@ for (marker in markers){
     ggp[[marker]]=FeaturePlot(snrna.combined, features=marker,min.cutoff = 0) + ggtitle(marker)
     print(ggp[[marker]])
 }
-dev.off()
+mute <- dev.off()
 
 pdf(paste0(out_dir, "combined.dotplot.geneSymbol.pdf"), width = 30, height = 10)
 p1 <- DotPlot_scCustom(snrna.combined, features = markers, x_lab_rotate = TRUE) + scale_x_discrete(breaks= markers)
 print(p1)
-dev.off()
+mute <- dev.off()
 ``` 
 
 <a  id="mgt"></a> 
@@ -677,12 +654,12 @@ for (marker in markers){
     ggp[[marker]]=FeaturePlot(snrna.combined, features=marker) + ggtitle(marker)
     print(ggp[[marker]])
 }
-dev.off()
+mute <- dev.off()
   
 pdf(paste0(out_dir, "combined.dotplot.geneSymbol.pdf"), width = 30, height = 10)
 p1 <- scCustomize::DotPlot_scCustom(snrna.combined, features = markers, x_lab_rotate = TRUE) + scale_x_discrete(breaks= markers)
 print(p1)
-dev.off()
+mute <- dev.off()
       
 
   

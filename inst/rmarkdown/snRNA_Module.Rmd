@@ -308,9 +308,9 @@ for (sample in samples){
 }
 
 pdf(paste0(out_dir,"prefilter_scatter.pdf"))
-print(plots + coord_fixed())
+print(plots)
 mute <- dev.off()
-print(plots + coord_fixed())
+print(plots)
 
 
 # Postfilter
@@ -330,10 +330,10 @@ for (sample in samples){
 }
 
 pdf(paste0(out_dir,"postfilter_scatter.pdf"))
-print(plots + coord_fixed())
+print(plots)
 
 mute <- dev.off()
-print(plots + coord_fixed())
+print(plots)
 
 ```
 ### Ribosomal Percentage Plots
@@ -356,9 +356,9 @@ for (sample in samples){
 }
 
 pdf(paste0(out_dir,"prefilter_scatter.pdf"))
-print(plots + coord_fixed())
+print(plots)
 mute <- dev.off()
-print(plots + coord_fixed())
+print(plots)
 
 # Postfilter
 plots <- list()
@@ -376,9 +376,9 @@ for (sample in samples){
 }
 
 pdf(paste0(out_dir,"postfilter_scatter.pdf"))
-print(plots + coord_fixed())
+print(plots)
 mute <- dev.off()
-print(plots + coord_fixed())
+print(plots)
 ```
 ### UMI Transcript Plots
 <a  id="UMIs_transcripts_per_cell"></a> 

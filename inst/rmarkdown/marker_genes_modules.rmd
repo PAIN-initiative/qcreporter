@@ -339,6 +339,9 @@ facet_wrap(~sample_id) +
 ggtitle("Postfilter Mitochondrial Percentag")
 
 ggarrange(prefilter_qc_mito,postfilter_qc_mito,ncol=1,nrow=2,widths = 25,heights = 30)
+pdf(paste0(out_dir,"mito_percentage.pdf"))
+ggarrange(prefilter_qc_mito,postfilter_qc_mito,ncol=1,nrow=2,widths = 25,heights = 30)
+dev.off()
 ```
 
 <a  id="Ribosomal_Percentage"></a> 
@@ -368,7 +371,10 @@ geom_hline(yintercept = 300) +
 facet_wrap(~sample_id) +
 ggtitle("Postfilter Ribosomal Percentage")
 
-ggarrange(prefilter_qc_ribo,postfilter_qc_ribo,ncol=1,nrow=2,widths = 10,heights = 8)
+ggarrange(prefilter_qc_ribo,postfilter_qc_ribo,ncol=1,nrow=2,widths = 25,heights = 30)
+pdf(paste0(out_dir,"ribo_percentage.pdf"))
+ggarrange(prefilter_qc_ribo,postfilter_qc_ribo,ncol=1,nrow=2,widths = 25,heights = 30)
+dev.off()
 ```
 <a  id="UMIs_transcripts_per_cell"></a> 
 ```{r, echo=FALSE,results='hide',fig.keep='all'}
@@ -390,7 +396,10 @@ UMIs_transcripts_per_cell_postfilter <- metadata_postfilter %>%
   	geom_vline(xintercept = 500) + 
     ggtitle("Postfilter UMIs Transcripts Per Cell")
 
-ggarrange(UMIs_transcripts_per_cell_prefilter,UMIs_transcripts_per_cell_postfilter,ncol=1,nrow=2,widths = 10,heights = 8)
+ggarrange(UMIs_transcripts_per_cell_prefilter,UMIs_transcripts_per_cell_postfilter,ncol=1,nrow=2,widths = 25,heights = 30)
+pdf(paste0(out_dir,"UMI_transcripts_per_cell.pdf"))
+ggarrange(UMIs_transcripts_per_cell_prefilter,UMIs_transcripts_per_cell_postfilter,ncol=1,nrow=2,widths = 25,heights = 30)
+dev.off()
 ```
 <a  id="Genes_Per_Cell"></a> 
 ```{r, echo=FALSE,results='hide',fig.keep='all'}
@@ -410,7 +419,10 @@ genes_per_cell_post <- metadata_postfilter %>%
   	geom_vline(xintercept = 300) + 
     ggtitle("Postfilter Genes Per Cell")
 
-ggarrange(genes_per_cell_pre,genes_per_cell_post,ncol=1,nrow=2,widths = 10,heights = 8)
+ggarrange(genes_per_cell_pre,genes_per_cell_post,ncol=1,nrow=2,widths = 25,heights = 30)
+pdf(paste0(out_dir,"genes_per_cell.pdf"))
+ggarrange(genes_per_cell_pre,genes_per_cell_post,ncol=1,nrow=2,widths = 25,heights = 30)
+dev.off()
 ```
   
 ```{r, echo=FALSE,results='hide',fig.keep='all'}

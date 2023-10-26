@@ -107,9 +107,11 @@ selected_c <- WhichCells(snrna.combined_prefilter, expression = nFeature_RNA > 3
 selected_f <- rownames(snrna.combined_prefilter)[Matrix::rowSums(snrna.combined_prefilter) > 3]
 # Apply the filter
 data.filt <- subset(snrna.combined_prefilter, features = selected_f, cells = selected_c)
-# Mito Filter
-selected_mito <- WhichCells(data.filt, expression = percent.mito == 0)
+# Mito/Ribo Filter
+selected_mito <- WhichCells(data.filt, expression = percent.mito <= mito_cutoff)
+selected_ribo <- WhichCells(data.filt, expression = percent.ribo <= ribo_cutoff)
 data.filt <- subset(data.filt, cells = selected_mito)
+data.filt <- subset(data.filt, cells = selected_ribo)
 #dim(data.filt)
 #table(data.filt$orig.ident)
 

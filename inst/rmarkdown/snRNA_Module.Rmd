@@ -379,7 +379,6 @@ print(plots)
 mute <- dev.off()
 print(plots)
 ```
-### UMI Transcript Plots
 <a  id="UMIs_transcripts_per_cell"></a> 
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 UMIs_transcripts_per_cell_prefilter <- metadata_prefilter %>% 
@@ -408,7 +407,6 @@ mute <- dev.off()
 print(p + coord_fixed())
 
 ```
-### Genes Per Cell Plots
 <a  id="Genes Per Cell"></a> 
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 genes_per_cell_pre <- metadata_prefilter %>% 
@@ -464,7 +462,6 @@ snrna.combined <- RunPCA(snrna.combined, npcs = 30, verbose = FALSE)
     mute <- dev.off()
 
 ```
-### UMAP Resolution
 <a  id="UMAP_Resolution"></a> 
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 # Continue on analysis
@@ -503,7 +500,6 @@ Idents(snrna.combined) <- resolution
 rm(snrna.list)
 ```
 <a  id="UMAP_Sample"></a> 
-### UMAP - Sample
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 p1 <- DimPlot(snrna.combined, reduction = "umap", group.by = "sample_id")
 pdf(file=paste0(out_dir, "combined.umap.colorBySample.pdf"))
@@ -524,7 +520,6 @@ saveRDS(snrna.combined, paste0(out_dir, "snrna.combined_postfilter.seurat.", pro
 [Return to Contents](#snrna_seq_sample_top) 
 
 ```{r echo=FALSE,message=FALSE}
-# Set the identity as louvain with resolution 0.5
 meta <- snrna.combined@meta.data
 Idents(snrna.combined) <- resolution
 # Find Markers

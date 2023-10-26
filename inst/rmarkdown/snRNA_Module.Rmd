@@ -320,7 +320,7 @@ dev.off()
 plots
 
 # Postfilter
-snrna.list <- SplitObject(postfilter , split.by = "sample_id")
+snrna.list <- SplitObject(so_postfilter , split.by = "sample_id")
 plots <- list()
 for (sample in samples){
      plots[[sample]] <- snrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 

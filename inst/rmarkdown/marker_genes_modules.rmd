@@ -515,7 +515,6 @@ rm(scrna.list)
 ```
 
 <a  id="UMAP_Sample"></a> 
-### UMAP - Samples
 ```{r, echo=FALSE,results='hide',fig.keep='all'}
 p1 <- DimPlot(scrna.combined, reduction = "umap", group.by = "sample_id")
 pdf(file=paste0(out_dir, "combined.umap.colorBySample.pdf"))

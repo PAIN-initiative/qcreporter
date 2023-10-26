@@ -452,10 +452,6 @@ scrna.combined <- RunPCA(scrna.combined, npcs = 30, verbose = FALSE)
     p1 <- ElbowPlot(scrna.combined) + ggtitle("Integrated") + theme(aspect.ratio=5/10) + theme(plot.margin = unit(c(6, 6, 6, 6), "cm"))
     print(p1 + coord_fixed())
     dev.off()
-
-
-
-
 ```
 <a  id="UMAP_Resolution"></a> 
 ### UMAP - Resolutions
@@ -495,7 +491,7 @@ meta <- scrna.combined@meta.data
 Idents(scrna.combined) <- resolution
 rm(scrna.list)
 ```
-```
+
 <a  id="UMAP_Sample"></a> 
 ### UMAP - Samples
 ```{r, echo=FALSE,results='hide',fig.keep='all'}
@@ -644,8 +640,6 @@ p1 <- scCustomize::DotPlot_scCustom(scrna.combined, features = markers, x_lab_ro
 print(p1)
 dev.off()
       
-
-  
 ```
  ---  
 

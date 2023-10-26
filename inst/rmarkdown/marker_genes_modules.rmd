@@ -120,23 +120,7 @@ n_cells_df <- as.data.frame(cbind(samples,NCells))
 
 pdf(paste0(out_dir,"prefilter_n_cells.pdf"),onefile=TRUE,height=10,width=15)
 ggplot(data = n_cells_df, aes(x=samples,y = as.integer(NCells),fill = samples)) + geom_bar(stat="identity") + geom_text(aes(label=NCells), position=position_dodge(width=0.9), vjust=-0.25) + ggtitle("Number of Cells") 
-dev.off()
-
-plots <- list()
-for (sample in samples){
-     
-     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
-     geom_point() + 
-     scale_colour_gradient(low = "gray90", high = "black") +
-     stat_smooth(method=lm) +
-     scale_x_log10() +
-     scale_y_log10() + 
-     theme_classic() +
-     geom_vline(xintercept = 500) +
-     geom_hline(yintercept = 300) +
-     facet_wrap(~sample_id) + ggtitle("Prefilter Mitochondrial Percentage")
-}
-saveRDS(plots,paste0(out_dir,"Prefilter_Scatter_Plots.RDS"))
+mute <- dev.off()
 
 mito_cutoff = percent_mito
 ribo_cutoff = percent_ribo
@@ -312,72 +296,97 @@ dev.off()
 
 ### QC Plots
 <a  id="Mitochondrial_Percentage"></a> 
-```{r, echo=FALSE,results='hide',fig.keep='all'}
-# mito
-prefilter_qc_mito <- metadata_prefilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
-geom_point() + 
-scale_colour_gradient(low = "gray90", high = "black") +
-stat_smooth(method=lm) +
-scale_x_log10() +
-scale_y_log10() + 
-theme_classic() +
-geom_vline(xintercept = 500) +
-geom_hline(yintercept = 300) +
-facet_wrap(~sample_id) + 
-ggtitle("Prefilter Mitochondrial Percentage")
+```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
+snrna.list <- SplitObject(scrna.combined_prefilter, split.by = "sample_id")
+# Prefilter
+plots <- list()
+for (sample in samples){
+     plots[[sample]] <- snrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
+     geom_point() + 
+     scale_colour_gradient(low = "gray90", high = "black") +
+     stat_smooth(method=lm) +
+     scale_x_log10() +
+     scale_y_log10() + 
+     theme_classic() +
+     geom_vline(xintercept = 500) +
+     geom_hline(yintercept = 300) +
+     facet_wrap(~sample_id) + ggtitle("Prefilter Mitochondrial Percentage")
+}
 
-postfilter_qc_mito <- metadata_postfilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
-geom_point() + 
-scale_colour_gradient(low = "gray90", high = "black") +
-stat_smooth(method=lm) +
-scale_x_log10() +
-scale_y_log10() + 
-theme_classic() +
-geom_vline(xintercept = 500) +
-geom_hline(yintercept = 300) +
-facet_wrap(~sample_id) + 
-ggtitle("Postfilter Mitochondrial Percentag")
+pdf(paste0(out_dir,"prefilter_scatter.pdf"))
+print(plots)
+mute <- dev.off()
+print(plots)
 
-ggarrange(prefilter_qc_mito,postfilter_qc_mito,ncol=1,nrow=2,widths = 25,heights = 30)
-pdf(paste0(out_dir,"mito_percentage.pdf"))
-ggarrange(prefilter_qc_mito,postfilter_qc_mito,ncol=1,nrow=2,widths = 25,heights = 30)
-dev.off()
+
+# Postfilter
+snrna.list <- SplitObject(so_postfilter , split.by = "sample_id")
+plots <- list()
+for (sample in samples){
+     plots[[sample]] <- snrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
+     geom_point() + 
+     scale_colour_gradient(low = "gray90", high = "black") +
+     stat_smooth(method=lm) +
+     scale_x_log10() +
+     scale_y_log10() + 
+     theme_classic() +
+     geom_vline(xintercept = 500) +
+     geom_hline(yintercept = 300) +
+     facet_wrap(~sample_id) + ggtitle("Postfilter Mitochondrial Percentage")
+}
+
+pdf(paste0(out_dir,"postfilter_scatter.pdf"))
+print(plots)
+
+mute <- dev.off()
+print(plots)
 ```
 
 <a  id="Ribosomal_Percentage"></a> 
-```{r, echo=FALSE,results='hide',fig.keep='all'}
+```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 # ribo
-prefilter_qc_ribo <- metadata_prefilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
-geom_point() + 
-scale_colour_gradient(low = "gray90", high = "black") +
-stat_smooth(method=lm) +
-scale_x_log10() +
-scale_y_log10() + 
-theme_classic() +
-geom_vline(xintercept = 500) +
-geom_hline(yintercept = 300) +
-facet_wrap(~sample_id) +
-ggtitle("Prefilter Ribosomal Percentage")
+# Prefilter
+plots <- list()
+for (sample in samples){
+     plots[[sample]] <- snrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
+     geom_point() + 
+     scale_colour_gradient(low = "gray90", high = "black") +
+     stat_smooth(method=lm) +
+     scale_x_log10() +
+     scale_y_log10() + 
+     theme_classic() +
+     geom_vline(xintercept = 500) +
+     geom_hline(yintercept = 300) +
+     facet_wrap(~sample_id) + ggtitle("Prefilter Ribo Percentage")
+}
 
-postfilter_qc_ribo <- metadata_postfilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
-geom_point() + 
-scale_colour_gradient(low = "gray90", high = "black") +
-stat_smooth(method=lm) +
-scale_x_log10() +
-scale_y_log10() + 
-theme_classic() +
-geom_vline(xintercept = 500) +
-geom_hline(yintercept = 300) +
-facet_wrap(~sample_id) +
-ggtitle("Postfilter Ribosomal Percentage")
+pdf(paste0(out_dir,"prefilter_scatter.pdf"))
+print(plots)
+mute <- dev.off()
+print(plots)
 
-ggarrange(prefilter_qc_ribo,postfilter_qc_ribo,ncol=1,nrow=2,widths = 25,heights = 30)
-pdf(paste0(out_dir,"ribo_percentage.pdf"))
-ggarrange(prefilter_qc_ribo,postfilter_qc_ribo,ncol=1,nrow=2,widths = 25,heights = 30)
-dev.off()
+# Postfilter
+plots <- list()
+for (sample in samples){
+     plots[[sample]] <- snrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
+     geom_point() + 
+     scale_colour_gradient(low = "gray90", high = "black") +
+     stat_smooth(method=lm) +
+     scale_x_log10() +
+     scale_y_log10() + 
+     theme_classic() +
+     geom_vline(xintercept = 500) +
+     geom_hline(yintercept = 300) +
+     facet_wrap(~sample_id) + ggtitle("Postfilter Ribo Percentage")
+}
+
+pdf(paste0(out_dir,"postfilter_scatter.pdf"))
+print(plots)
+mute <- dev.off()
+print(plots)
 ```
 <a  id="UMIs_transcripts_per_cell"></a> 
-```{r, echo=FALSE,results='hide',fig.keep='all'}
+```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 UMIs_transcripts_per_cell_prefilter <- metadata_prefilter %>% 
   	ggplot(aes(color=sample_id, x=nCount_RNA, fill= sample_id)) + 
   	geom_density(alpha = 0.2) + 
@@ -396,13 +405,13 @@ UMIs_transcripts_per_cell_postfilter <- metadata_postfilter %>%
   	geom_vline(xintercept = 500) + 
     ggtitle("Postfilter UMIs Transcripts Per Cell")
 
-ggarrange(UMIs_transcripts_per_cell_prefilter,UMIs_transcripts_per_cell_postfilter,ncol=1,nrow=2,widths = 25,heights = 30)
+ggarrange(UMIs_transcripts_per_cell_prefilter,UMIs_transcripts_per_cell_postfilter,ncol=1,nrow=2)
 pdf(paste0(out_dir,"UMI_transcripts_per_cell.pdf"))
-ggarrange(UMIs_transcripts_per_cell_prefilter,UMIs_transcripts_per_cell_postfilter,ncol=1,nrow=2,widths = 25,heights = 30)
+ggarrange(UMIs_transcripts_per_cell_prefilter,UMIs_transcripts_per_cell_postfilter,ncol=1,nrow=2)
 dev.off()
 ```
 <a  id="Genes_Per_Cell"></a> 
-```{r, echo=FALSE,results='hide',fig.keep='all'}
+```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 genes_per_cell_pre <- metadata_prefilter %>% 
   	ggplot(aes(color=sample_id, x=nCount_RNA, fill=sample_id )) + 
   	geom_density(alpha = 0.2) + 
@@ -419,13 +428,13 @@ genes_per_cell_post <- metadata_postfilter %>%
   	geom_vline(xintercept = 300) + 
     ggtitle("Postfilter Genes Per Cell")
 
-ggarrange(genes_per_cell_pre,genes_per_cell_post,ncol=1,nrow=2,widths = 25,heights = 30)
+ggarrange(genes_per_cell_pre,genes_per_cell_post,ncol=1,nrow=2)
 pdf(paste0(out_dir,"genes_per_cell.pdf"))
-ggarrange(genes_per_cell_pre,genes_per_cell_post,ncol=1,nrow=2,widths = 25,heights = 30)
+ggarrange(genes_per_cell_pre,genes_per_cell_post,ncol=1,nrow=2)
 dev.off()
 ```
   
-```{r, echo=FALSE,results='hide',fig.keep='all'}
+```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 # Integration
 # normalize and identify variable features for each dataset independently
 scrna.list <- SplitObject(so_postfilter, split.by = "sample_id")
@@ -455,38 +464,38 @@ scrna.combined <- RunPCA(scrna.combined, npcs = 30, verbose = FALSE)
 ```
 <a  id="UMAP_Resolution"></a> 
 ### UMAP - Resolutions
-```{r, echo=FALSE,results='hide',fig.keep='all'}
+```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 # Continue on analysis
 scrna.combined <- FindNeighbors(scrna.combined, dims = 1:30, k.param = 60, prune.SNN = 1/15)
 scrna.combined <- FindClusters(scrna.combined, graph.name = "CCA_snn", resolution = seq(0.5,3,by=0.1),algorithm = alg,verbose=FALSE)
 scrna.combined <- RunUMAP(scrna.combined, reduction = "pca", dims = 1:30,verbose=FALSE)
 res_0.5 <- DimPlot(scrna.combined, group.by = "CCA_snn_res.0.5", label = TRUE)
 pdf(paste0(out_dir, "res_0.5.pdf"))
-print(res_0.5)
-dev.off()
-res_0.5
+print(res_0.5 + coord_fixed())
+mute <- dev.off()
+print(res_0.5 + coord_fixed())
 res_0.7 <- DimPlot(scrna.combined, group.by = "CCA_snn_res.0.7", label = TRUE)
 pdf(paste0(out_dir, "res_0.7.pdf"))
-print(res_0.7)
-dev.off()
+print(res_0.7 + coord_fixed())
+mute <- dev.off()
 res_1 <- DimPlot(scrna.combined, group.by = "CCA_snn_res.1", label = TRUE)
 pdf(paste0(out_dir, "res_1.pdf"))
-print(res_1)
-dev.off()
-res_1
+print(res_1 + coord_fixed())
+mute <- dev.off()
+print(res_1 + coord_fixed())
 res_1.2 <- DimPlot(scrna.combined, group.by = "CCA_snn_res.1.2", label = TRUE)
 pdf(paste0(out_dir, "res_1.2.pdf"))
-print(res_1.2)
-dev.off()
+print(res_1.2 + coord_fixed())
+mute <- dev.off()
 res_1.4 <- DimPlot(scrna.combined, group.by = "CCA_snn_res.1.4", label = TRUE)
 pdf(paste0(out_dir, "res_1.4.pdf"))
-print(res_1.4) 
-dev.off()
+print(res_1.4 + coord_fixed())
+mute <- dev.off()
 res_2 <- DimPlot(scrna.combined, group.by = "CCA_snn_res.2", label = TRUE)
 pdf(paste0(out_dir, "res_2.pdf"))
-print(res_2)
-dev.off()
-res_2
+print(res_2 + coord_fixed())
+mute <- dev.off()
+print(res_2 + coord_fixed())
 meta <- scrna.combined@meta.data
 Idents(scrna.combined) <- resolution
 rm(scrna.list)
@@ -498,16 +507,16 @@ rm(scrna.list)
 p1 <- DimPlot(scrna.combined, reduction = "umap", group.by = "sample_id")
 pdf(file=paste0(out_dir, "combined.umap.colorBySample.pdf"))
 print(p1 + coord_fixed())
-dev.off()
+mute <- dev.off()
 print(p1 + coord_fixed())
 p2 <- DimPlot(scrna.combined, reduction = "umap", label = TRUE, repel = TRUE)
 pdf(paste0(out_dir, "combined.umap.colorByCluster.pdf"))
 print(p2 + coord_fixed())
-dev.off()
+mute <- dev.off()
 p4 <- DimPlot(scrna.combined, reduction = "umap", group.by = "treatment")
 pdf(file=paste0(out_dir, "combined.umap.colorByTreatment.pdf"))
 print(p4 + coord_fixed())
-dev.off() 
+mute <- dev.off() 
 saveRDS(scrna.combined, paste0(out_dir, "scrna.combined_postfilter.seurat.", projectName, ".rds"))
 ```
 

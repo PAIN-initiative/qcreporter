@@ -13,6 +13,7 @@ stm("Starting snRNA Cluster Annotation Module")
 ### Contents 
 #### [QC Seurat Object](#seurat_qc)
   - [Principal Component Plot (Elbow Plot)](#elbow_plot)
+  - [QC](#QC)
   - [UMAP-Treatments](#UMAP)
   - [Marker Gene Table](#mgt) 
   - [UMAP with Cell Annotations](#cell_type_annotation)
@@ -294,7 +295,7 @@ dev.off()
 
 ### QC Plots
 <a  id="Mitochondrial_Percentage"></a> 
-```{r echo=FALSE,message=FALSE}
+```{r, echo=FALSE,results='hide',fig.keep='all'}
 # mito
 prefilter_qc_mito <- metadata_prefilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
 geom_point() + 
@@ -320,11 +321,15 @@ geom_hline(yintercept = 300) +
 facet_wrap(~sample_id) + 
 ggtitle("Postfilter Mitochondrial Percentag")
 
-ggarrange(prefilter_qc_mito,postfilter_qc_mito,ncol=1,nrow=2,widths = 25,heights = 30)
+p <- ggarrange(prefilter_qc_mito,postfilter_qc_mito,ncol=1,nrow=2,widths = 25,heights = 30)
+pdf(paste0(out_dir,"mito_percentage.pdf")
+p
+dev.off()
+p
 ```
 
 <a  id="Ribosomal_Percentage"></a> 
-```{r echo=FALSE,message=FALSE}
+```{r, echo=FALSE,results='hide',fig.keep='all'}
 # ribo
 prefilter_qc_ribo <- metadata_prefilter %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
 geom_point() + 
@@ -350,10 +355,14 @@ geom_hline(yintercept = 300) +
 facet_wrap(~sample_id) +
 ggtitle("Postfilter Ribosomal Percentage")
 
-ggarrange(prefilter_qc_ribo,postfilter_qc_ribo,ncol=1,nrow=2,widths = 10,heights = 8)
+p <- ggarrange(prefilter_qc_ribo,postfilter_qc_ribo,ncol=1,nrow=2,widths = 25,heights = 30)
+pdf(paste0(out_dir,"ribo_percentage.pdf")
+p
+dev.off()
+p
 ```
 <a  id="UMIs_transcripts_per_cell"></a> 
-```{r echo=FALSE,message=FALSE}
+```{r, echo=FALSE,results='hide',fig.keep='all'}
 UMIs_transcripts_per_cell_prefilter <- metadata_prefilter %>% 
   	ggplot(aes(color=sample_id, x=nCount_RNA, fill= sample_id)) + 
   	geom_density(alpha = 0.2) + 
@@ -372,10 +381,14 @@ UMIs_transcripts_per_cell_postfilter <- metadata_postfilter %>%
   	geom_vline(xintercept = 500) + 
     ggtitle("Postfilter UMIs Transcripts Per Cell")
 
-ggarrange(UMIs_transcripts_per_cell_prefilter,UMIs_transcripts_per_cell_postfilter,ncol=1,nrow=2,widths = 10,heights = 8)
+p <- ggarrange(UMIs_transcripts_per_cell_prefilter,UMIs_transcripts_per_cell_postfilter,ncol=1,nrow=2,widths = 25,heights = 30)
+pdf(paste0(out_dir,"UMI_Transcripts_Per_Cell.pdf")
+p
+dev.off()
+p
 ```
 <a  id="Genes Per Cell"></a> 
-```{r echo=FALSE,message=FALSE}
+```{r, echo=FALSE,results='hide',fig.keep='all'}
 genes_per_cell_pre <- metadata_prefilter %>% 
   	ggplot(aes(color=sample_id, x=nCount_RNA, fill=sample_id )) + 
   	geom_density(alpha = 0.2) + 
@@ -392,12 +405,15 @@ genes_per_cell_post <- metadata_postfilter %>%
   	geom_vline(xintercept = 300) + 
     ggtitle("Postfilter Genes Per Cell")
 
-ggarrange(genes_per_cell_pre,genes_per_cell_post,ncol=1,nrow=2,widths = 10,heights = 8)
+p <- ggarrange(genes_per_cell_pre,genes_per_cell_post,ncol=1,nrow=2,widths = 10,heights = 8)
+pdf(paste0(out_dir,"Genes_Per_Cell.pdf")
+p
+dev.off()
+p
+
 ```
-
-
 [Return to Contents](#snrna_seq_sample_top) 
-```{r echo=FALSE,message=FALSE}
+```{r, echo=FALSE,results='hide',fig.keep='all'}
 # Integration
 # normalize and identify variable features for each dataset independently
 snrna.list <- SplitObject(so_postfilter, split.by = "sample_id")
@@ -419,19 +435,16 @@ snrna.combined <- RunPCA(snrna.combined, npcs = 30, verbose = FALSE)
 ```
 <a  id="elbow_plot"></a> 
 ### Linear Dimensionality Reduction 
-```{r echo=FALSE,message=FALSE}
+```{r, echo=FALSE,results='hide',fig.keep='all'}
     pdf(paste0(out_dir, "ElbowPlot.pdf"))
     p1 <- ElbowPlot(snrna.combined) + ggtitle("Integrated") + theme(aspect.ratio=5/10) + theme(plot.margin = unit(c(6, 6, 6, 6), "cm"))
     print(p1 + coord_fixed())
     dev.off()
 
-
-
-
 ```
 <a  id="UMAP_Resolutions"></a> 
 ### UMAP - Resolutions
-```{r echo=FALSE,message=FALSE}
+```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 # Continue on analysis
 snrna.combined <- FindNeighbors(snrna.combined, dims = 1:30, k.param = 60, prune.SNN = 1/15)
 snrna.combined <- FindClusters(snrna.combined, graph.name = "CCA_snn", resolution = seq(0.5,3,by=0.1),algorithm = alg,verbose=FALSE)

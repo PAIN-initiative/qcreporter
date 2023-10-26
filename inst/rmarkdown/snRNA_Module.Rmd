@@ -290,6 +290,8 @@ mute <- dev.off()
 ### QC Plots
 <a  id="Mitochondrial_Percentage"></a> 
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
+metadata_prefilter <- snrna.combined_prefilter@meta.data %>% as.data.table
+metadata_postfilter <- so_postfilter@meta.data %>% as.data.table
 cell_count_prefilter  <- metadata_prefilter[, .N, by = "sample_id"]
 cell_count_prefilter <- as.data.frame(cell_count_prefilter)
 cell_count_prefilter$QC_Status <- rep("Prefilter",length(cell_count_prefilter$N))

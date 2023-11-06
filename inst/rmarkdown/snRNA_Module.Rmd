@@ -110,7 +110,7 @@ ribo_cutoff = percent_ribo
 # Detection based filtering
 # 300 detected genes and the genes need to be expressesd in atleast 3 cells.
 selected_c <- WhichCells(snrna.combined_prefilter, expression = nFeature_RNA > 300)
-selected_f <- rownames(snrna.combined_prefilter)[Matrix::rowSums(snrna.combined_prefilter) > 3]
+selected_f <- rownames(snrna.combined_prefilter)[Matrix::rowSums(snrna.combined_prefilter@assays$RNA@counts > 0) > 3]
 # Apply the filter
 data.filt <- subset(snrna.combined_prefilter, features = selected_f, cells = selected_c)
 # Mito/Ribo Filter

@@ -313,9 +313,9 @@ cell_count_postfilter <- as.data.frame(cell_count_postfilter)
 cell_count_postfilter$QC_Status <- rep("Postfilter",length(cell_count_prefilter$N))
 colnames(cell_count_postfilter) <- c("Sample","N_Cells","QC_Status")
 NCellDF <- rbind(cell_count_prefilter,cell_count_postfilter)
-NCellDF$QC_Status <- factor(NCellDF$QC_Status, levels=c("Prefilter", "Postfilter"))
+order <- c("Prefilter","Postfilter")
 pdf(paste0(out_dir,"N_Cells_prefilter_postfilter.pdf"))
-ggplot(NCellDF, aes(fill=QC_Status, y=N_Cells, x=Sample)) + 
+ggplot(NCellDF, aes(fill=QC_Status, y=N_Cells, x=Sample,level=order)) + 
     geom_bar(position="dodge", stat="identity") + geom_text(aes(label=N_Cells), position=position_dodge(width=0.9), vjust=-0.25)
 mute <- dev.off()
 ggplot(NCellDF, aes(fill=QC_Status, y=N_Cells, x=Sample)) + 

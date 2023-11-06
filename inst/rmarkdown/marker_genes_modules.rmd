@@ -98,6 +98,11 @@ scrna.combined_prefilter <- Merge_Seurat_List(scrna.list,
                                               project = "sample_id")
 # metadata variable
 metadata_prefilter <- scrna.combined_prefilter@meta.data
+names(metadata_prefilter)[names(metadata_prefilter)=="nCount_RNA"] <- "nUMI"
+names(metadata_prefilter)[names(metadata_prefilter)=="nFeature_RNA"] <- "nGene"
+scrna.combined_prefilter <- AddMetaData(
+  object = scrna.combined_prefilter,
+  metadata = metadata_prefilter)
 # Save Prefilter
 saveRDS(scrna.combined_prefilter, paste0(out_dir, "scrna.combined_prefilter.seurat.", projectName, ".rds"))
 
@@ -126,7 +131,7 @@ mito_cutoff = percent_mito
 ribo_cutoff = percent_ribo
 # Detection based filtering
 # 300 detected genes and the genes need to be expressesd in atleast 3 cells.
-selected_c <- WhichCells(scrna.combined_prefilter, expression = nFeature_RNA > 300)
+selected_c <- WhichCells(scrna.combined_prefilter, expression = nGene > 300)
 selected_f <- rownames(scrna.combined_prefilter)[Matrix::rowSums(scrna.combined_prefilter) > 3]
 # Apply the filter
 data.filt <- subset(scrna.combined_prefilter, features = selected_f, cells = selected_c)
@@ -245,7 +250,7 @@ for (sample in samples){
 
 VlnPlots = list()
 for (sample in samples){
-VlnPlots[[sample]] <- VlnPlot(scrna.list[[sample]], features = "nFeature_RNA", group.by = DF.name[[sample]], pt.size = 0.1)
+VlnPlots[[sample]] <- VlnPlot(scrna.list[[sample]], features = "nGene", group.by = DF.name[[sample]], pt.size = 0.1)
 }
 
 for (sample in samples){
@@ -319,7 +324,7 @@ scrna.list <- SplitObject(scrna.combined_prefilter, split.by = "sample_id")
 # Prefilter
 plots <- list()
 for (sample in samples){
-     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
+     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene, color=percent.mito)) + 
      geom_point() + 
      scale_colour_gradient(low = "gray90", high = "black") +
      stat_smooth(method=lm) +
@@ -341,7 +346,7 @@ print(plots)
 scrna.list <- SplitObject(so_postfilter , split.by = "sample_id")
 plots <- list()
 for (sample in samples){
-     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.mito)) + 
+     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene, color=percent.mito)) + 
      geom_point() + 
      scale_colour_gradient(low = "gray90", high = "black") +
      stat_smooth(method=lm) +
@@ -363,7 +368,7 @@ print(plots)
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 plots <- list()
 for (sample in samples){
-     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
+     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene, color=percent.ribo)) + 
      geom_point() + 
      scale_colour_gradient(low = "gray90", high = "black") +
      stat_smooth(method=lm) +
@@ -383,7 +388,7 @@ print(plots)
 # Postfilter
 plots <- list()
 for (sample in samples){
-     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=percent.ribo)) + 
+     plots[[sample]] <- scrna.list[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene, color=percent.ribo)) + 
      geom_point() + 
      scale_colour_gradient(low = "gray90", high = "black") +
      stat_smooth(method=lm) +
@@ -403,7 +408,7 @@ print(plots)
 <a  id="UMIs_transcripts_per_cell"></a> 
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 UMIs_transcripts_per_cell_prefilter <- metadata_prefilter %>% 
-  	ggplot(aes(color=sample_id, x=nCount_RNA, fill= sample_id)) + 
+  	ggplot(aes(color=sample_id, x=nUMI, fill= sample_id)) + 
   	geom_density(alpha = 0.2) + 
   	scale_x_log10() + 
   	theme_classic() +
@@ -412,7 +417,7 @@ UMIs_transcripts_per_cell_prefilter <- metadata_prefilter %>%
     ggtitle("Prefilter UMIs Transcripts Per Cell")
 
 UMIs_transcripts_per_cell_postfilter <- metadata_postfilter %>% 
-  	ggplot(aes(color=sample_id, x=nCount_RNA, fill= sample_id)) + 
+  	ggplot(aes(color=sample_id, x=nUMI, fill= sample_id)) + 
   	geom_density(alpha = 0.2) + 
   	scale_x_log10() + 
   	theme_classic() +
@@ -428,7 +433,7 @@ mute <- dev.off()
 <a  id="Genes_Per_Cell"></a> 
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 genes_per_cell_pre <- metadata_prefilter %>% 
-  	ggplot(aes(color=sample_id, x=nCount_RNA, fill=sample_id )) + 
+  	ggplot(aes(color=sample_id, x=nGene, fill=sample_id )) + 
   	geom_density(alpha = 0.2) + 
   	theme_classic() +
   	scale_x_log10() + 
@@ -436,7 +441,7 @@ genes_per_cell_pre <- metadata_prefilter %>%
     ggtitle("Prefilter Genes Per Cell")
 
 genes_per_cell_post <- metadata_postfilter %>% 
-  	ggplot(aes(color=sample_id, x=nCount_RNA, fill=sample_id )) + 
+  	ggplot(aes(color=sample_id, x=nGene, fill=sample_id )) + 
   	geom_density(alpha = 0.2) + 
   	theme_classic() +
   	scale_x_log10() + 

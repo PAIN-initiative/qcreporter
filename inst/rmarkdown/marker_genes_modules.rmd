@@ -161,10 +161,10 @@ C[[sample]] <- Matrix::t(Matrix::t(C[[sample]])/Matrix::colSums(C[[sample]])) * 
 most_expressed[[sample]] <- order(apply(C[[sample]], 1, median), decreasing = T)[20:1]
 }
 most_expressed_plots = list()
-par(mar=c(4,8,4.1,2.1)
+par(mar=c(4,8,4.1,2.1))
 for (sample in samples){
     pdf(paste0(out_dir,sample,"_most_expressed_genes.pdf"),width=18,height=12)
-    boxplot(as.matrix(t(C[[sample]][most_expressed[[sample]], ])), cex = 0.1, las = 1, xlab = "% total count per cell",
+    boxplot(as.matrix(t(C[[sample]][most_expressed[[sample]], ])), cex = 0.1, las = 1, xlab = "% Total Count per Cell",
     col = (scales::hue_pal())(20)[20:1], horizontal = TRUE)
     mute <- dev.off()
 }

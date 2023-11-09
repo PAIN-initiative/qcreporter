@@ -310,12 +310,28 @@ cell_count_postfilter$QC_Status <- rep("Postfilter",length(cell_count_prefilter$
 colnames(cell_count_postfilter) <- c("Sample","N_Cells","QC_Status")
 NCellDF <- rbind(cell_count_prefilter,cell_count_postfilter)
 order <- c("Prefilter","Postfilter")
-pdf(paste0(out_dir,"N_Cells_prefilter_postfilter.pdf"))
+pdf(paste0(in_dir,"N_Cells_prefilter_postfilter.pdf"),width=16,height=8)
 ggplot(NCellDF, aes(fill=factor(QC_Status,levels=order), y=N_Cells,x=Sample)) + 
-    geom_bar(position="dodge", stat="identity") + geom_text(aes(label=N_Cells), position=position_dodge(width=0.9), vjust=-0.25)
+    geom_bar(position="dodge", stat="identity") + geom_text(aes(label=N_Cells), position=position_dodge(width=0.9), vjust=-0.25) + xlab("Sample") + ylab("Number of Cells") + 
+            theme(axis.title.x = element_text(size = 12, face = "bold"),
+                  axis.title.y = element_text(size = 12, face = "bold")) +
+            theme(axis.text.y=element_text(size=8,face="bold")) + 
+            theme(axis.text.x=element_text(size=8,face="bold")) + 
+            theme(legend.text=element_text(size=8,face="bold")) +
+            theme(legend.title=element_text(size=12,face="bold")) +
+            theme(legend.key.size = unit(1, 'cm')) +
+            guides(fill=guide_legend(title="Treatment"))
 mute <- dev.off()
 ggplot(NCellDF, aes(fill=factor(QC_Status,levels=order), y=N_Cells,x=Sample)) + 
-    geom_bar(position="dodge", stat="identity") + geom_text(aes(label=N_Cells), position=position_dodge(width=0.9), vjust=-0.25)
+    geom_bar(position="dodge", stat="identity") + geom_text(aes(label=N_Cells), position=position_dodge(width=0.9), vjust=-0.25) + xlab("Sample") + ylab("Number of Cells") + 
+            theme(axis.title.x = element_text(size = 12, face = "bold"),
+                  axis.title.y = element_text(size = 12, face = "bold")) +
+            theme(axis.text.y=element_text(size=8,face="bold")) + 
+            theme(axis.text.x=element_text(size=8,face="bold")) + 
+            theme(legend.text=element_text(size=8,face="bold")) +
+            theme(legend.title=element_text(size=12,face="bold")) +
+            theme(legend.key.size = unit(1, 'cm')) +
+            guides(fill=guide_legend(title="Treatment"))
 snrna.list <- SplitObject(snrna.combined_prefilter, split.by = "sample_id")
 # Prefilter
 plots <- list()

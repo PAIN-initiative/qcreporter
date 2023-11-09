@@ -239,8 +239,7 @@ DF.name[[sample]] = colnames(scrna.list[[sample]]@meta.data)[grepl("^DF.classifi
 # Plot the Doublet Finder results
 UMAP_plots <- list()
 for (sample in samples){
-    UMAP_plots[[sample]] <-  cowplot::plot_grid(ncol = 2, DimPlot(scrna.list[[sample]], group.by = "sample_id") + NoAxes(),
-    DimPlot(scrna.list[[sample]], group.by = DF.name[[sample]]) + NoAxes())
+    UMAP_plots[[sample]] <-  cowplot::plot_grid(DimPlot(scrna.list[[sample]], group.by = DF.name[[sample]]))
 }
 
 for (sample in samples){

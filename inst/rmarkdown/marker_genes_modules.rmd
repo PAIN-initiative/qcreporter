@@ -161,6 +161,7 @@ most_expressed_plots = list()
 # most_expressed_plots[[sample]] <- 
 for (sample in samples){
     pdf(paste0(out_dir,sample,"_most_expressed_genes.pdf"),width=18,height=12)
+    par(mar=c(4,5,4.1,2.1)
     boxplot(as.matrix(t(C[[sample]][most_expressed[[sample]], ])), cex = 0.1, las = 1, xlab = "% total count per cell",
     col = (scales::hue_pal())(20)[20:1], horizontal = TRUE)
     mute <- dev.off()

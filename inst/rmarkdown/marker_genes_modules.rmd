@@ -431,7 +431,7 @@ UMIs_transcripts_per_cell_prefilter <- metadata_prefilter %>%
   	scale_x_log10() + 
   	theme_classic() +
   	ylab("Cell density") +
-  	geom_vline(xintercept = 500) + 
+  	geom_vline(xintercept = 300) + 
     ggtitle("Prefilter UMIs Transcripts Per Cell")
 
 UMIs_transcripts_per_cell_postfilter <- metadata_postfilter %>% 

@@ -552,9 +552,7 @@ pdf(file=paste0(out_dir, "combined.umap.colorByTreatment.pdf"))
 print(p4 + coord_fixed())
 mute <- dev.off() 
 saveRDS(scrna.combined, paste0(out_dir, "scrna.combined_postfilter.seurat.", projectName, ".rds"))
-```
 
-```{r, echo=FALSE,message=FALSE}
 DefaultAssay(scrna.combined) <- "RNA"
 all.genes <- rownames(scrna.combined)
 scrna.combined <- ScaleData(scrna.combined,features = all.genes,verbose = FALSE)
@@ -565,21 +563,6 @@ scrna.markers <- FindAllMarkers(scrna.combined,verbose=FALSE,test.use = "MAST")
 names(scrna.markers)[names(scrna.markers) == "gene"] <- "geneSymbol"
 scrna.markers$geneID <- geneTable$geneID[match(scrna.markers$geneSymbol, geneTable$geneSymbol)]
 write.table(scrna.markers, paste0(out_dir, "FindAllMarkers.clusters.xls"), sep = "\t", row.names = F)
-# top 10
-top10<- scrna.markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_log2FC)
-write.table(top10, paste0(out_dir, "FindAllMarkers.clusters.top10.xls"), sep = "\t", col.names = NA)
-
-# top 25
-top25 <- scrna.markers %>% group_by(cluster) %>% top_n(n = 25, wt = avg_log2FC)
-write.table(top25, paste0(out_dir, "FindAllMarkers.clusters.top25.xls"), sep = "\t", col.names = NA)
-
-# top 50
-top50 <- scrna.markers %>% group_by(cluster) %>% top_n(n = 50, wt = avg_log2FC)
-write.table(top50, paste0(out_dir, "FindAllMarkers.clusters.top50.xls"), sep = "\t", col.names = NA)
-
-# Step 6: Top 3 identified genes, feature plot, dotplot
-topN <- Extract_Top_Markers(scrna.markers, num_genes = 25, named_vector = FALSE, make_unique = TRUE, gene_column = "geneSymbol")
-        
 ```
 
  ---  

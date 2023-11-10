@@ -113,6 +113,9 @@ selected_c <- WhichCells(snrna.combined_prefilter, expression = nGene > 300)
 selected_f <- rownames(snrna.combined_prefilter)[Matrix::rowSums(snrna.combined_prefilter@assays$RNA@counts > 0) > 3]
 # Apply the filter
 data.filt <- subset(snrna.combined_prefilter, features = selected_f, cells = selected_c)
+# filter cells nUMI > 300
+selected_c <- WhichCells(data.filt, expression = nUMI > 300)
+data.filt <- subset(data.filt, cells = selected_c)
 # Mito/Ribo Filter
 selected_mito <- WhichCells(data.filt, expression = percent.mito <= mito_cutoff)
 selected_ribo <- WhichCells(data.filt, expression = percent.ribo <= ribo_cutoff)
@@ -137,9 +140,11 @@ most_expressed[[sample]] <- order(apply(C[[sample]], 1, median), decreasing = T)
 }
 most_expressed_plots = list()
 
+most_expressed_plots = list()
 for (sample in samples){
-    most_expressed_plots[[sample]] <- pdf(paste0(out_dir,sample,"_most_expressed_genes.pdf"),width=18,height=12)
-    boxplot(as.matrix(t(C[[sample]][most_expressed[[sample]], ])), cex = 0.1, las = 1, xlab = "% total count per cell",
+    pdf(paste0(out_dir,sample,"_most_expressed_genes.pdf"),width=18,height=12)
+    par(mar = c(4, 8, 2, 1))
+    boxplot(as.matrix(t(C[[sample]][most_expressed[[sample]], ])), cex = 0.1, las = 1, xlab = "% Total Count per Cell",
     col = (scales::hue_pal())(20)[20:1], horizontal = TRUE)
     mute <- dev.off()
 }
@@ -240,8 +245,7 @@ DF.name[[sample]] = colnames(snrna.list[[sample]]@meta.data)[grepl("^DF.classifi
 # Plot the Doublet Finder results
 UMAP_plots <- list()
 for (sample in samples){
-    UMAP_plots[[sample]] <-  cowplot::plot_grid(ncol = 2, DimPlot(snrna.list[[sample]], group.by = "sample_id") + NoAxes(),
-    DimPlot(snrna.list[[sample]], group.by = DF.name[[sample]]) + NoAxes())
+    UMAP_plots[[sample]] <-  cowplot::plot_grid(DimPlot(scrna.list[[sample]], group.by = DF.name[[sample]]))
 }
 
 for (sample in samples){

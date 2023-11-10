@@ -348,7 +348,7 @@ for (sample in samples){
      scale_x_log10() +
      scale_y_log10() + 
      theme_classic() +
-     geom_vline(xintercept = 500) +
+     geom_vline(xintercept = 300) +
      geom_hline(yintercept = 300) +
      facet_wrap(~sample_id) + ggtitle("Prefilter Mitochondrial Percentage")
 }
@@ -370,7 +370,7 @@ for (sample in samples){
      scale_x_log10() +
      scale_y_log10() + 
      theme_classic() +
-     geom_vline(xintercept = 500) +
+     geom_vline(xintercept = 300) +
      geom_hline(yintercept = 300) +
      facet_wrap(~sample_id) + ggtitle("Postfilter Mitochondrial Percentage")
 }
@@ -392,7 +392,7 @@ for (sample in samples){
      scale_x_log10() +
      scale_y_log10() + 
      theme_classic() +
-     geom_vline(xintercept = 500) +
+     geom_vline(xintercept = 300) +
      geom_hline(yintercept = 300) +
      facet_wrap(~sample_id) + ggtitle("Prefilter Ribo Percentage")
 }
@@ -412,7 +412,7 @@ for (sample in samples){
      scale_x_log10() +
      scale_y_log10() + 
      theme_classic() +
-     geom_vline(xintercept = 500) +
+     geom_vline(xintercept = 300) +
      geom_hline(yintercept = 300) +
      facet_wrap(~sample_id) + ggtitle("Postfilter Ribo Percentage")
 }

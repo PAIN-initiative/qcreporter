@@ -1,4 +1,4 @@
-f<!-- # Child Rmarkdown Document for Cluster Annotation -->
+<!-- # Child Rmarkdown Document for Cluster Annotation -->
 <!-- Parent document must have a variable "in_rna" containing metadata-injected H5 files by sample --> 
 <a id="rna_seq_cluster_annotation_top"></a>
 

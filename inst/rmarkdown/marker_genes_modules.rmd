@@ -342,7 +342,7 @@ scrna.list_prefilter <- SplitObject(scrna.combined_prefilter, split.by = "sample
 
 # Hist plot Mito Prefilter
 
-pdf(paste0(output_dir,"Prefilter_mito_hist_plots.pdf"))
+pdf(paste0(out_dir,"Prefilter_mito_hist_plots.pdf"))
 for (sample in samples){
 hist(scrna.list_prefilter[[sample]]$percent.mito, xlab="Mitochondrial proportion (%)", 
                               ylab="Number of cells", breaks=100, main=sample, col="grey80")
@@ -380,7 +380,7 @@ print(plots)
 scrna.list_postfilter <- SplitObject(so_postfilter , split.by = "sample_id")
 
 # Hist Mito Postfilter
-pdf(paste0(output_dir,"Postfilter_mito_hist_plots.pdf"))
+pdf(paste0(out_dir,"Postfilter_mito_hist_plots.pdf"))
 for (sample in samples){
 hist(scrna.list_postfilter[[sample]]$percent.mito, xlab="Mitochondrial proportion (%)", 
                               ylab="Number of cells", breaks=100, main=sample, col="grey80")
@@ -416,7 +416,7 @@ print(plots)
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 
 # Hist plot ribo
-pdf(paste0(output_dir,"Prefilter_ribo_hist_plots.pdf"))
+pdf(paste0(out_dir,"Prefilter_ribo_hist_plots.pdf"))
 for (sample in samples){
 hist(scrna.list_prefilter[[sample]]$percent.ribo, xlab="Ribosomal proportion (%)", 
                               ylab="Number of cells", breaks=100, main=sample, col="grey80")
@@ -449,7 +449,7 @@ print(plots)
 
 # Postfilter
 
-pdf(paste0(output_dir,"Postfilter_ribo_hist_plots.pdf"))
+pdf(paste0(out_dir,"Postfilter_ribo_hist_plots.pdf"))
 for (sample in samples){
 hist(scrna.list_postfilter[[sample]]$percent.ribo, xlab="Ribosomal proportion (%)", 
                               ylab="Number of cells", breaks=100, main=sample, col="grey80")

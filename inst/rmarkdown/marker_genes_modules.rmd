@@ -130,13 +130,13 @@ mute <- dev.off()
 mito_cutoff = percent_mito
 ribo_cutoff = percent_ribo
 # Detection based filtering
-# 300 detected genes and the genes need to be expressesd in atleast 3 cells.
-selected_c <- WhichCells(scrna.combined_prefilter, expression = nGene > 300)
+# 200 detected genes and the genes need to be expressesd in atleast 3 cells.
+selected_c <- WhichCells(scrna.combined_prefilter, expression = nGene > 200)
 selected_f <- rownames(scrna.combined_prefilter)[Matrix::rowSums(scrna.combined_prefilter@assays$RNA@counts > 0) > 3]
 # Apply the filter
 data.filt <- subset(scrna.combined_prefilter, features = selected_f, cells = selected_c)
-# filter cells nUMI > 300
-selected_c <- WhichCells(data.filt, expression = nUMI > 300)
+# filter cells nUMI > 200
+selected_c <- WhichCells(data.filt, expression = nUMI > 200)
 data.filt <- subset(data.filt, cells = selected_c)
 
 # Filter Percent Mito & Percent Ribo

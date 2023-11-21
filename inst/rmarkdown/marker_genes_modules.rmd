@@ -341,17 +341,30 @@ ggplot(NCellDF, aes(fill=factor(QC_Status,levels=order), y=N_Cells,x=Sample)) +
 scrna.list_prefilter <- SplitObject(scrna.combined_prefilter, split.by = "sample_id")
 
 # Hist nUMI Prefilter
-pdf(paste0(out_dir,"Prefilter_nUMI_hist_plots.pdf"))
+pdf(paste0(in_dir,"Prefilter_nUMI_hist_plots.pdf"))
 for (sample in samples){
 hist(scrna.list_prefilter[[sample]]$nUMI, xlab="nUMI", 
                               ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")
+q5_prefilter[[sample]] <- quantile(scrna.list_prefilter[[sample]]$nUMI, 0.05)
+q95_prefilter[[sample]] <- quantile(scrna.list_prefilter[[sample]]$nUMI, 0.95)
+q99_prefilter[[sample]] <- quantile(scrna.list_prefilter[[sample]]$nUMI, 0.99)
 }
 dev.off()
+write.csv(q5_prefilter,paste0(out_dir,"q5_prefilter.csv"))
+write.csv(q95_prefilter,paste0(out_dir,"q95_prefilter.csv"))
+write.csv(q99_prefilter,paste0(out_dir,"q99_prefilter.csv"))
+
+q99_prefilter_median <- q99_prefilter %>% unlist() %>% median()
 
 for (sample in samples){
 hist(scrna.list_prefilter[[sample]]$nUMI, xlab="nUMI", 
                               ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")
 }
+
+# filter cells nUMI < q99_prefilter_median
+selected_c <- WhichCells(so_postfilter, expression = nUMI < q99_prefilter_median)
+so_postfilter <- subset(so_postfilter, cells = selected_c)
+
 
 # Hist nGene Prefilter
 pdf(paste0(out_dir,"Prefilter_nGene_hist_plots.pdf"))

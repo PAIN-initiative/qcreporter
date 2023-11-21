@@ -344,13 +344,13 @@ scrna.list_prefilter <- SplitObject(scrna.combined_prefilter, split.by = "sample
 pdf(paste0(out_dir,"Prefilter_nUMI_hist_plots.pdf"))
 for (sample in samples){
 hist(scrna.list_prefilter[[sample]]$nUMI, xlab="nUMI", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
+                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")
 }
 dev.off()
 
 for (sample in samples){
 hist(scrna.list_prefilter[[sample]]$nUMI, xlab="nUMI", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
+                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")
 }
 
 # Hist nGene Prefilter
@@ -412,13 +412,13 @@ scrna.list_postfilter <- SplitObject(so_postfilter , split.by = "sample_id")
 pdf(paste0(out_dir,"Postfilter_nUMI_hist_plots.pdf"))
 for (sample in samples){
 hist(scrna.list_postfilter[[sample]]$nUMI, xlab="nUMI", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
+                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")
 }
 dev.off()
 
 for (sample in samples){
 hist(scrna.list_postfilter[[sample]]$nUMI, xlab="nUMI", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
+                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")
 }
 
 # Hist nGene Postfilter

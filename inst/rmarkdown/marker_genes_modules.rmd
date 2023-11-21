@@ -386,9 +386,9 @@ dev.off()
 # Prefilter
 plots <- list()
 for (sample in samples){
-     plots[[sample]] <- scrna.list_prefilter[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene, color=percent.mito)) + 
-     geom_point() + 
-     scale_colour_gradient(low = "gray90", high = "black") +
+     plots[[sample]] <- scrna.list_prefilter[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene)) + 
+     geom_point(aes(color = percent.mito)) +    
+     scale_color_viridis_c() + 
      stat_smooth(method=lm) +
      scale_x_log10() +
      scale_y_log10() + 
@@ -407,6 +407,7 @@ print(plots)
 # Postfilter
 
 scrna.list_postfilter <- SplitObject(so_postfilter , split.by = "sample_id")
+
 # Hist nUMI Postfilter
 pdf(paste0(out_dir,"Postfilter_nUMI_hist_plots.pdf"))
 for (sample in samples){
@@ -452,9 +453,9 @@ dev.off()
 
 plots <- list()
 for (sample in samples){
-     plots[[sample]] <- scrna.list_postfilter[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene, color=percent.mito)) + 
-     geom_point() + 
-     scale_colour_gradient(low = "gray90", high = "black") +
+     plots[[sample]] <- scrna.list_postfilter[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene)) + 
+     geom_point(aes(color = percent.mito)) +    
+     scale_color_viridis_c() + 
      stat_smooth(method=lm) +
      scale_x_log10() +
      scale_y_log10() + 
@@ -477,9 +478,9 @@ print(plots)
 
 plots <- list()
 for (sample in samples){
-     plots[[sample]] <- scrna.list_prefilter[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene, color=percent.ribo)) + 
-     geom_point() + 
-     scale_colour_gradient(low = "gray90", high = "black") +
+     plots[[sample]] <- scrna.list_prefilter[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene) + 
+     geom_point(aes(color = percent.ribo)) +    
+     scale_color_viridis_c() + 
      stat_smooth(method=lm) +
      scale_x_log10() +
      scale_y_log10() + 
@@ -496,23 +497,13 @@ print(plots)
 
 # Postfilter
 
-pdf(paste0(out_dir,"Postfilter_ribo_hist_plots.pdf"))
-for (sample in samples){
-hist(scrna.list_postfilter[[sample]]$percent.ribo, xlab="Ribosomal proportion (%)", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
-}
-dev.off()
 
-for (sample in samples){
-hist(scrna.list_postfilter[[sample]]$percent.ribo, xlab="Ribosomal proportion (%)", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
-}
 
 plots <- list()
 for (sample in samples){
-     plots[[sample]] <- scrna.list_postfilter[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene, color=percent.ribo)) + 
-     geom_point() + 
-     scale_colour_gradient(low = "gray90", high = "black") +
+     plots[[sample]] <- scrna.list_postfilter[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene)) + 
+     geom_point(aes(color = percent.ribo)) +    
+     scale_color_viridis_c() + 
      stat_smooth(method=lm) +
      scale_x_log10() +
      scale_y_log10() + 

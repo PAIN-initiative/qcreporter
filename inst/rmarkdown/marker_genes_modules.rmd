@@ -477,8 +477,9 @@ print(plots)
 
 
 plots <- list()
+
 for (sample in samples){
-     plots[[sample]] <- scrna.list_prefilter[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene) + 
+     plots[[sample]] <- scrna.list_prefilter[[sample]]@meta.data %>% ggplot(aes(x=nUMI, y=nGene)) + 
      geom_point(aes(color = percent.ribo)) +    
      scale_color_viridis_c() + 
      stat_smooth(method=lm) +

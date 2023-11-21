@@ -341,7 +341,10 @@ ggplot(NCellDF, aes(fill=factor(QC_Status,levels=order), y=N_Cells,x=Sample)) +
 scrna.list_prefilter <- SplitObject(scrna.combined_prefilter, split.by = "sample_id")
 
 # Hist nUMI Prefilter
-pdf(paste0(in_dir,"Prefilter_nUMI_hist_plots.pdf"))
+q5_prefilter  <- list()
+q95_prefilter <- list()
+q99_prefilter <- list()
+pdf(paste0(out_dir,"Prefilter_nUMI_hist_plots.pdf"))
 for (sample in samples){
 hist(scrna.list_prefilter[[sample]]$nUMI, xlab="nUMI", 
                               ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")

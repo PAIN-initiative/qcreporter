@@ -323,7 +323,8 @@ ggplot(NCellDF, aes(fill=factor(QC_Status,levels=order), y=N_Cells,x=Sample)) +
             theme(axis.text.y=element_text(size=8,face="bold")) + 
             theme(axis.text.x=element_text(size=8,face="bold")) + 
             theme(legend.text=element_text(size=8,face="bold")) +
-            theme(legend.title=element_text(size=12,face="bold")) +
+            theme(legend.title=element_text(size=12,face="bold")) + 
+            theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
             theme(legend.key.size = unit(1, 'cm')) +
             guides(fill=guide_legend(title="Treatment"))
 mute <- dev.off()

@@ -366,7 +366,7 @@ hist(scrna.list_prefilter[[sample]]$nUMI, xlab="nUMI",
 }
 
 # filter cells nUMI < 50000
-selected_c <- WhichCells(so_postfilter, expression = nUMI < 50000)
+selected_c <- WhichCells(so_postfilter, expression = nUMI < q99_prefilter_median)
 so_postfilter <- subset(so_postfilter, cells = selected_c)
 
 

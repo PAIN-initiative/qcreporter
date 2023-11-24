@@ -170,20 +170,35 @@ for (sample in samples){
 
     # Filter MALAT1
 if (filter_MALAT == TRUE){
-  for (sample in samples){
-  scrna.list[[sample]] <- scrna.list[[sample]][!grepl("MALAT1:Malat1", rownames(scrna.list[[sample]])), ]
+counts     <- list()
+remove_idx <- list()
+for (sample in samples){
+     counts[[sample]]     <- GetAssayData(scrna.list[[sample]], assay = "RNA")
+     remove_idx[[sample]] <- grep("MALAT1|Malat1",rownames(counts[[sample]] ))
+     counts[[sample]] <- counts[[sample]][-c(remove_idx[[sample]]),]
+     scrna.list[[sample]] <- subset(scrna.list[[sample]], features = rownames(counts[[sample]]))
   }
 }
 # Filter Mitocondrial
 if (filter_MITO == TRUE){
-  for (sample in samples){
-  scrna.list[[sample]] <- scrna.list[[sample]][!grepl("^MT:|MT-|mt:|mt-", rownames(scrna.list[[sample]])), ]
+counts     <- list()
+remove_idx <- list()
+for (sample in samples){
+     counts[[sample]]     <- GetAssayData(scrna.list[[sample]], assay = "RNA")
+     remove_idx[[sample]] <- grep("^MT:|MT-|mt:|mt-",rownames(counts[[sample]] ))
+     counts[[sample]] <- counts[[sample]][-c(remove_idx[[sample]]),]
+     scrna.list[[sample]] <- subset(scrna.list[[sample]], features = rownames(counts[[sample]]))
   }
 }
 # Filter Ribosomal gene (optional if that is a problem on your data) data.filt
 if (filter_RIBO == TRUE){
-  for (sample in samples){
-  scrna.list[[sample]] <- scrna.list[[sample]][!grepl("^RP[LS]|Rp[LS]", rownames(scrna.list[[sample]])), ]
+counts     <- list()
+remove_idx <- list()
+for (sample in samples){
+     counts[[sample]]     <- GetAssayData(scrna.list[[sample]], assay = "RNA")
+     remove_idx[[sample]] <- grep("^RP[LS]|Rp[LS]",rownames(counts[[sample]] ))
+     counts[[sample]] <- counts[[sample]][-c(remove_idx[[sample]]),]
+     scrna.list[[sample]] <- subset(scrna.list[[sample]], features = rownames(counts[[sample]]))
   }
 }
 ```

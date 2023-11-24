@@ -380,17 +380,7 @@ hist(scrna.list_prefilter[[sample]]$nUMI, xlab="nUMI",
                               ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")
 }
 
-# filter cells nUMI < 50000
-scrna.list_postfilter <- SplitObject(so_postfilter , split.by = "sample_id")
-selected_c = list()
-for (sample in samples){
-selected_c[[sample]] <- WhichCells(scrna.list_postfilter[[sample]], expression = nUMI < q99_prefilter[[sample]])
-scrna.list_postfilter[[sample]] <- subset(scrna.list_postfilter[[sample]], cells = selected_c[[sample]])
-}
-so_postfilter <- Merge_Seurat_List(scrna.list_postfilter,
-                                              add.cell.ids = NULL,
-                                              merge.data = TRUE,
-                                              project = "sample_id")
+
 # Hist nGene Prefilter
 pdf(paste0(out_dir,"Prefilter_nGene_hist_plots.pdf"))
 for (sample in samples){
@@ -445,7 +435,16 @@ print(plots)
 # Postfilter
 
 scrna.list_postfilter <- SplitObject(so_postfilter , split.by = "sample_id")
-
+# filter cells nUMI < q99_prefilter_median
+selected_c = list()
+for (sample in samples){
+selected_c[[sample]] <- WhichCells(scrna.list_postfilter[[sample]], expression = nUMI < q99_prefilter_median[[sample]])
+scrna.list_postfilter[[sample]] <- subset(scrna.list_postfilter[[sample]], cells = selected_c[[sample]])
+}
+so_postfilter <- Merge_Seurat_List(scrna.list_postfilter,
+                                              add.cell.ids = NULL,
+                                              merge.data = TRUE,
+                                              project = "sample_id")
 # Hist nUMI Postfilter
 pdf(paste0(out_dir,"Postfilter_nUMI_hist_plots.pdf"))
 for (sample in samples){

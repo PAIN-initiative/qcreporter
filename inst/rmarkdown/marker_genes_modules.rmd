@@ -381,10 +381,16 @@ hist(scrna.list_prefilter[[sample]]$nUMI, xlab="nUMI",
 }
 
 # filter cells nUMI < 50000
-selected_c <- WhichCells(so_postfilter, expression = nUMI < q99_prefilter_median)
-so_postfilter <- subset(so_postfilter, cells = selected_c)
-
-
+scrna.list_postfilter <- SplitObject(so_postfilter , split.by = "sample_id")
+selected_c = list()
+for (sample in samples){
+selected_c[[sample]] <- WhichCells(scrna.list_postfilter[[sample]], expression = nUMI < q99_prefilter[[sample]])
+scrna.list_postfilter[[sample]] <- subset(scrna.list_postfilter[[sample]], cells = selected_c[[sample]])
+}
+so_postfilter <- Merge_Seurat_List(scrna.list_postfilter,
+                                              add.cell.ids = NULL,
+                                              merge.data = TRUE,
+                                              project = "sample_id")
 # Hist nGene Prefilter
 pdf(paste0(out_dir,"Prefilter_nGene_hist_plots.pdf"))
 for (sample in samples){

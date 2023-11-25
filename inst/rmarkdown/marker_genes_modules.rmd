@@ -633,7 +633,7 @@ scrna.combined <- RunPCA(scrna.combined, npcs = 30, verbose = FALSE)
 ```{r, echo=FALSE,message=FALSE,results='hide',fig.keep='all'}
 # Continue on analysis
 scrna.combined <- FindNeighbors(scrna.combined, dims = 1:30, k.param = 60, prune.SNN = 1/15)
-scrna.combined <- FindClusters(scrna.combined, graph.name = "CCA_snn", resolution = seq(0.5,3,by=0.1),algorithm = alg,verbose=FALSE)
+scrna.combined <- FindClusters(scrna.combined, graph.name = "CCA_snn",do.sparse = FALSE,resolution = seq(0.5,3,by=0.1),algorithm = alg,verbose=FALSE)
 scrna.combined <- RunUMAP(scrna.combined, reduction = "pca", dims = 1:30,verbose=FALSE)
 res_0.5 <- DimPlot(scrna.combined, group.by = "CCA_snn_res.0.5", label = TRUE)
 pdf(paste0(out_dir, "res_0.5.pdf"))

@@ -438,7 +438,7 @@ scrna.list_postfilter <- SplitObject(so_postfilter , split.by = "sample_id")
 # filter cells nUMI < q99_prefilter_median
 selected_c = list()
 for (sample in samples){
-selected_c[[sample]] <- WhichCells(scrna.list_postfilter[[sample]], expression = nUMI < q99_prefilter_median[[sample]])
+selected_c[[sample]] <- WhichCells(scrna.list_postfilter[[sample]], expression = nUMI < q99_prefilter[[sample]])
 scrna.list_postfilter[[sample]] <- subset(scrna.list_postfilter[[sample]], cells = selected_c[[sample]])
 }
 so_postfilter <- Merge_Seurat_List(scrna.list_postfilter,

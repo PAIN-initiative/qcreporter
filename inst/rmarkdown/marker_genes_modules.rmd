@@ -239,11 +239,41 @@ nExp = list()
 for (sample in samples){
 scrna.list[[sample]] <- scrna.list[[sample]] %>% NormalizeData()
 scrna.list[[sample]] = FindVariableFeatures(scrna.list[[sample]], verbose = F)
-scrna.list[[sample]] = ScaleData(scrna.list[[sample]],verbose = F)
+scrna.list[[sample]] = ScaleData(scrna.list[[sample]],verbose = F,vars.to.regress = c("nGene","percent.mito"))
 scrna.list[[sample]] = RunPCA(scrna.list[[sample]], verbose = F, npcs = 20)
 scrna.list[[sample]] = RunUMAP(scrna.list[[sample]], dims = 1:10, verbose = F)
-nExp[[sample]] <- round(ncol(scrna.list[[sample]]) * multiplet_rate[[sample]])  # expected doublets
-scrna.list[[sample]] <- suppressMessages(doubletFinder_v3(scrna.list[[sample]], pN = 0.25, pK = 0.09, nExp = nExp[[sample]], PCs = 1:10))
+}
+
+sweep.res   <- list()
+sweep.stats <- list()
+bcmvn       <- list()
+
+
+for (sample in samples){
+ sweep.res[[sample]] <- paramSweep_v3(scrna.list[[sample]]) 
+ sweep.stats[[sample]] <- summarizeSweep(sweep.res[[sample]], GT = FALSE) 
+ bcmvn[[sample]] <- find.pK(sweep.stats[[sample]])
+}
+
+for (sample in samples){
+    pdf(paste0(out_dir,sample,"_param_sweep_doubletFinder.pdf"),width=18,height=12)
+    barplot(bcmvn[[sample]]$BCmetric, names.arg = bcmvn[[sample]]$pK, las=2)
+    mute <- dev.off()
+}
+
+max_BCmetric = list()
+pk_value     = list()
+for (sample in samples){
+    max_BCmetric[[sample]]    <- max(bcmvn[[sample]]$BCmetric)
+    pk_value[[sample]]        <- bcmvn[[sample]] %>% filter(bcmvn[[sample]]$BCmetric == max_BCmetric[[sample]])
+    pk_value[[sample]]        <- pk_value[[sample]]$pK
+}
+
+nExp = list()
+for (sample in samples){
+    nExp[[sample]] <- round(ncol(scrna.list[[sample]]) * multiplet_rate[[sample]])  # expected doublets
+    scrna.list[[sample]] <- suppressMessages(doubletFinder_v3(scrna.list[[sample]], pN = 0.25, pK = as.integer(pk_value[[sample]]), nExp =     
+nExp[[sample]], PCs = 1:10))
 }
 
 

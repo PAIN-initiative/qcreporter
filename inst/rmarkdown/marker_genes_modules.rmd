@@ -344,6 +344,7 @@ mute <- dev.off()
 
 
 # Hist nUMI Prefilter
+scrna.list_prefilter <- SplitObject(scrna.combined_prefilter, split.by = "sample_id")
 q5_prefilter  <- list()
 q95_prefilter <- list()
 q99_prefilter <- list()

@@ -26,27 +26,56 @@ stm("Starting scRNA Cluster Annotation Module")
 stm("Reading in Marker Genes")
 
 if (length(grep("https",in_key)) > 0) {
-    ss <- read_sheet(in_key)
+    all_sheets <- list()
+    for (name in sheet_names){
+         all_sheets[[name]] <- read_sheet(in_key, sheet = name)
+    }
+        ss_int      <- all_sheets$SAMPLE
+        Sample      <- ss_int$'sample ID'
+        Segment     <- ss_int$segment
+        Diagnosis   <- ss_int$diagnosis
+        Treatment   <- ss_int$treatment
+        Tissue      <- ss_int$"tissue type"
+        ss_int      <- all_sheets$ASSAY_snRNAseq
+        Assay       <- ss_int$Assay_shortcode
+        ss          <- as.data.frame(cbind(Sample,Segment,Diagnosis,Tissue,Assay))
+        samples <- unique(ss$Sample)
+        treatments <- ss$Treatment
+        MarkerGenes <- read.csv(marker_genes)
+        colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')
     } else if (length(grep(".xlsx",in_key)) > 0 ){
         ss <- import_list(in_key)
-    } else {
-        ss <- read.csv(in_key)
-}
-
-metatable <- ss$MetaTable_expectedCell
-if ("Final list" %in% colnames(metatable)) {
-    metatable <- metatable %>% filter(metatable$"Final list" == 1)
-}
-samples <- unique(metatable$Sample)
-treatments <- metatable$Treatment      
+        metatable <- ss$MetaTable_expectedCell
+        if ("Final list" %in% colnames(metatable)) {
+            metatable <- metatable %>% filter(metatable$"Final list" == 1)
+        }
+        samples <- unique(metatable$Sample)
+        treatments <- metatable$Treatment      
               
-# Format Marker Genes
-MarkerGenes <- ss$MarkerGenes
-colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')
-markers <- MarkerGenes$'marker_gene'
-if (species == "Homo Sapiens"){
-    markers <- toupper(markers)
-}
+        # Format Marker Genes
+        MarkerGenes <- ss$MarkerGenes
+        colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')
+        markers <- MarkerGenes$'marker_gene'
+        if (species == "Homo Sapiens"){
+            markers <- toupper(markers)
+            }
+        } else {
+            ss <- read.csv(in_key)
+            metatable <- ss$MetaTable_expectedCell
+            if ("Final list" %in% colnames(metatable)) {
+                metatable <- metatable %>% filter(metatable$"Final list" == 1)
+            }
+        }
+        samples <- unique(metatable$Sample)
+        treatments <- metatable$Treatment      
+              
+        # Format Marker Genes
+        MarkerGenes <- ss$MarkerGenes
+        colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')
+        markers <- MarkerGenes$'marker_gene'
+        if (species == "Homo Sapiens"){
+            markers <- toupper(markers)
+        }
 
 # read in gene name table
 geneTable <- read.csv(paste0(refdir, "geneAnnotationTable.csv"), header = T, row.names = 1)

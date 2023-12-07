@@ -77,6 +77,7 @@ quiet_library(RCurl)
 quiet_library(DoubletFinder)
 quiet_library(scCustomize)
 quiet_library(forcats)
+quiet_library(googlesheets4)
 
 stm("Starting NGS Sample Report")
 

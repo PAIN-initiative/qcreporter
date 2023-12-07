@@ -41,7 +41,7 @@ if (length(grep("https",in_key)) > 0) {
         ss          <- as.data.frame(cbind(Sample,Segment,Diagnosis,Tissue,Assay))
         samples <- unique(ss$Sample)
         treatments <- ss$Treatment
-        MarkerGenes <- read.csv(marker_genes)
+        MarkerGenes <- all_sheets$MarkerGenes
         colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')
     } else if (length(grep(".xlsx",in_key)) > 0 ){
         ss <- import_list(in_key)

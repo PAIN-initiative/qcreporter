@@ -26,6 +26,7 @@ stm("Starting scRNA Cluster Annotation Module")
 stm("Reading in Marker Genes")
 
 if (length(grep("https",in_key)) > 0) {
+    sheet_names <- sheet_names(ss = in_key)
     all_sheets <- list()
     for (name in sheet_names){
          all_sheets[[name]] <- read_sheet(in_key, sheet = name)
@@ -43,6 +44,11 @@ if (length(grep("https",in_key)) > 0) {
         treatments <- ss$Treatment
         MarkerGenes <- all_sheets$MarkerGenes
         colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')
+        markers <- MarkerGenes$'marker_gene'
+        if (species == "Homo Sapiens"){
+            markers <- toupper(markers)
+        }
+
     } else if (length(grep(".xlsx",in_key)) > 0 ){
         ss <- import_list(in_key)
         metatable <- ss$MetaTable_expectedCell
@@ -65,17 +71,16 @@ if (length(grep("https",in_key)) > 0) {
             if ("Final list" %in% colnames(metatable)) {
                 metatable <- metatable %>% filter(metatable$"Final list" == 1)
             }
-        }
-        samples <- unique(metatable$Sample)
-        treatments <- metatable$Treatment      
-              
-        # Format Marker Genes
-        MarkerGenes <- ss$MarkerGenes
-        colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')
-        markers <- MarkerGenes$'marker_gene'
+            samples <- unique(metatable$Sample)
+            treatments <- metatable$Treatment      
+                    # Format Marker Genes
+            MarkerGenes <- ss$MarkerGenes
+            colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')
+            markers <- MarkerGenes$'marker_gene'
         if (species == "Homo Sapiens"){
             markers <- toupper(markers)
         }
+    }
 
 # read in gene name table
 geneTable <- read.csv(paste0(refdir, "geneAnnotationTable.csv"), header = T, row.names = 1)

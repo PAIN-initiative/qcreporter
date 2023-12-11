@@ -750,12 +750,16 @@ harmonized_seurat <- RunUMAP(harmonized_seurat, reduction = "harmony", assay = "
 harmonized_seurat <- FindNeighbors(object = harmonized_seurat, reduction = "harmony")
 harmonized_seurat <- FindClusters(harmonized_seurat,resolution = seq(0.5,3,by=0.1),algorithm = alg,verbose=FALSE)
 dir.create(file.path(paste0(out_dir,"harmony")))
-saveRDS(harmonized_seurat,file.path(paste0(out_dir,"harmony"))
 ```
 <a  id="elbow_plot"></a> 
 ```{r, echo=FALSE,results='hide',fig.keep='all'}
     pdf(paste0(out_dir, "ElbowPlot.pdf"))
     p1 <- ElbowPlot(scrna.combined) + ggtitle("Integrated") + theme(aspect.ratio=5/10) + theme(plot.margin = unit(c(6, 6, 6, 6), "cm"))
+    print(p1 + coord_fixed())
+    dev.off()
+
+    pdf(paste0(out_dir,"harmony","/", "ElbowPlot.pdf"))
+    p1 <- ElbowPlot(harmonized_seurat) + ggtitle("Harmony Integrated") + theme(aspect.ratio=5/10) + theme(plot.margin = unit(c(6, 6, 6, 6), "cm"))
     print(p1 + coord_fixed())
     dev.off()
 ```
@@ -794,30 +798,31 @@ mute <- dev.off()
 print(res_2 + coord_fixed())
 meta <- scrna.combined@meta.data
 Idents(scrna.combined) <- resolution
+## Harmony Resolution Plots
 res_0.2 <- DimPlot(harmonized_seurat, group.by = "SCT_snn_res.0.2", label = TRUE)
-pdf(paste0(out_dir, "res_0.2.pdf"))
+pdf(paste0(out_dir,"harmony","/", "res_0.2.pdf"))
 print(res_0.2 + coord_fixed() + ggtitle("Resolution 0.2"))
 mute <- dev.off()
 print(res_0.2 + coord_fixed())
 res_0.4 <- DimPlot(harmonized_seurat, group.by = "SCT_snn_res.0.4", label = TRUE)
-pdf(paste0(out_dir, "res_0.4.pdf"))
+pdf(paste0(out_dir,"harmony","/", "res_0.4.pdf"))
 print(res_0.4 + coord_fixed() + ggtitle("Resolution 0.4"))
 mute <- dev.off()
 res_0.6 <- DimPlot(harmonized_seurat, group.by = "SCT_snn_res.0.6", label = TRUE)
-pdf(paste0(out_dir, "res_0.6.pdf") )
+pdf(paste0(out_dir,"harmony","/", "res_0.6.pdf") )
 print(res_0.6 + coord_fixed() + ggtitle("Resolution 0.6"))
 mute <- dev.off()
 print(res_0.6 + coord_fixed())
 res_0.8 <- DimPlot(harmonized_seurat, group.by = "SCT_snn_res.0.8", label = TRUE)
-pdf(paste0(out_dir, "res_0.8.pdf"))
+pdf(paste0(out_dir,"harmony","/", "res_0.8.pdf"))
 print(res_0.8 + coord_fixed() + ggtitle("Resolution 0.8"))
 mute <- dev.off()
 res_1 <- DimPlot(harmonized_seurat, group.by = "SCT_snn_res.1", label = TRUE)
-pdf(paste0(out_dir, "res_1.pdf") )
+pdf(paste0(out_dir,"harmony","/", "res_1.pdf") )
 print(res_1 + coord_fixed() + ggtitle("Resolution 1"))
 mute <- dev.off()
 res_1.2 <- DimPlot(harmonized_seurat, group.by = "SCT_snn_res.1.2", label = TRUE)
-pdf(paste0(out_dir, "res_1.2.pdf") )
+pdf(paste0(out_dir,"harmony","/", "res_1.2.pdf") )
 print(res_1.2 + coord_fixed() + ggtitle("Resolution 1.2"))
 mute <- dev.off()
 print(res_1.2 + coord_fixed())
@@ -842,6 +847,22 @@ pdf(file=paste0(out_dir, "combined.umap.colorByTreatment.pdf"))
 print(p4 + coord_fixed())
 mute <- dev.off() 
 saveRDS(scrna.combined, paste0(out_dir, "scrna.combined_postfilter.seurat.", projectName, ".rds"))
+
+p1 <- DimPlot(harmonized_seurat, reduction = "umap", group.by = "sample_id")
+pdf(file=paste0(out_dir,"harmony","/", "combined.umap.colorBySample.pdf"))
+print(p1 + coord_fixed())
+mute <- dev.off()
+print(p1 + coord_fixed())
+p2 <- DimPlot(harmonized_seurat, reduction = "umap", label = TRUE, repel = TRUE)
+pdf(paste0(out_dir,"harmony","/", "combined.umap.colorByCluster.pdf"))
+print(p2 + coord_fixed())
+mute <- dev.off()
+p4 <- DimPlot(harmonized_seurat, reduction = "umap", group.by = "treatment")
+pdf(file=paste0(out_dir,"harmony","/", "combined.umap.colorByTreatment.pdf"))
+print(p4 + coord_fixed())
+mute <- dev.off() 
+saveRDS(harmonized_seurat, paste0(out_dir, "harmonized_seurat_postfilter.seurat.", projectName, ".rds"))
+
 ```
 ```{r, echo=FALSE,message=FALSE}
 DefaultAssay(scrna.combined) <- "RNA"
@@ -868,7 +889,33 @@ write.table(top50, paste0(out_dir, "FindAllMarkers.clusters.top50.xls"), sep = "
 
 # Step 6: Top 3 identified genes, feature plot, dotplot
 topN <- Extract_Top_Markers(scrna.markers, num_genes = 25, named_vector = FALSE, make_unique = TRUE, gene_column = "geneSymbol")
-        
+
+DefaultAssay(harmonized_seurat) <- "RNA"
+all.genes <- rownames(harmonized_seurat)
+harmonized_seurat <- ScaleData(harmonized_seurat,features = all.genes,verbose = FALSE)
+#nk.markers <- FindConservedMarkers(harmonized_seurat, ident.1 = 0, grouping.var = "sample_id", verbose = FALSE)
+# FindAllMarkers
+scrna.markers <- FindAllMarkers(harmonized_seurat, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25,verbose=FALSE)
+
+names(scrna.markers)[names(scrna.markers) == "gene"] <- "geneSymbol"
+scrna.markers$geneID <- geneTable$geneID[match(scrna.markers$geneSymbol, geneTable$geneSymbol)]
+write.table(scrna.markers, paste0(out_dir,"harmony","/", "FindAllMarkers.clusters.xls"), sep = "\t", row.names = F)
+# top 10
+top10<- scrna.markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_log2FC)
+write.table(top10, paste0(out_dir,"harmony","/", "FindAllMarkers.clusters.top10.xls"), sep = "\t", col.names = NA)
+
+# top 25
+top25 <- scrna.markers %>% group_by(cluster) %>% top_n(n = 25, wt = avg_log2FC)
+write.table(top25, paste0(out_dir,"harmony","/", "FindAllMarkers.clusters.top25.xls"), sep = "\t", col.names = NA)
+
+# top 50
+top50 <- scrna.markers %>% group_by(cluster) %>% top_n(n = 50, wt = avg_log2FC)
+write.table(top50, paste0(out_dir,"harmony","/", "FindAllMarkers.clusters.top50.xls"), sep = "\t", col.names = NA)
+
+# Step 6: Top 3 identified genes, feature plot, dotplot
+topN <- Extract_Top_Markers(scrna.markers, num_genes = 25, named_vector = FALSE, make_unique = TRUE, gene_column = "geneSymbol")
+
+
 ```
 <a  id="mgt"></a> 
 ```{r echo=FALSE,message=FALSE}
@@ -946,6 +993,14 @@ for (marker in topN){
 }
 mute <- dev.off()
 
+# Feature plot
+pdf(paste0(out_dir,"harmony","/", "combined.top25markers.pdf"))
+ggp = list()
+for (marker in topN){
+    ggp[[marker]]=FeaturePlot(harmonized_seurat, features=marker)
+    print(ggp[[marker]])
+}
+mute <- dev.off()
 
 #DoHeatmap(scrna.combined, features = topN$geneID, size = 2, draw.lines = T, angle = 45, hjust = 0.2) + theme(axis.text.y = element_text(size = 5)) + NoLegend() + scale_y_discrete(breaks=topN$geneID,
 #        labels=geneTable$geneSymbol[match(topN$geneID, geneTable$geneID)])
@@ -967,6 +1022,19 @@ mute <- dev.off()
   
 pdf(paste0(out_dir, "combined.dotplot.geneSymbol.pdf"), width = 30, height = 10)
 p1 <- scCustomize::DotPlot_scCustom(scrna.combined, features = markers, x_lab_rotate = TRUE) + scale_x_discrete(breaks= markers)
+print(p1)
+mute <- dev.off()
+
+pdf(paste0(out_dir,"harmony","/", "combined.markers.geneSymbol.pdf"))
+ggp = list()
+for (marker in markers){
+    ggp[[marker]]=FeaturePlot(harmonized_seurat, features=marker) + ggtitle(marker)
+    print(ggp[[marker]])
+}
+mute <- dev.off()
+  
+pdf(paste0(out_dir,"harmony","/", "combined.dotplot.geneSymbol.pdf"), width = 30, height = 10)
+p1 <- scCustomize::DotPlot_scCustom(harmonized_seurat, features = markers, x_lab_rotate = TRUE) + scale_x_discrete(breaks= markers)
 print(p1)
 mute <- dev.off()
       

@@ -10,7 +10,6 @@ output:
 params:
   experiment_id: NULL
   cellbender_dir: NULL            
-  outdir: NULL
   refdir: null           
   projectName: NULL     
   in_method_string: NULL
@@ -96,7 +95,6 @@ if(is.null(params$in_dir)) {
 } else {
   experiment_id    <- params$experiment_id
   cellbender_dir  <- params$cellbender_dir
-  outdir           <- params$out_dir
   refdir           <- params$refdir
   projectName      <- params$experiment_id  
   in_method_string <- params$in_method

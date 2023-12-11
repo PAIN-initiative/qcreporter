@@ -256,10 +256,11 @@ write.csv(q5_nUMI,paste0(out_dir,"q5_nUMI.csv"))
 write.csv(q95_nUMI,paste0(out_dir,"q95_nUMI.csv"))
 write.csv(q99_nUMI,paste0(out_dir,"q99_nUMI.csv"))
 
+
 selected_c <- list()
 for (sample in samples){
-     selected_c[[sample]]           <- WhichCells(scrna.list[[sample]], expression = nUMI < q99_nUMI[[sample]])
-     scrna.list_prefilter[[sample]] <- subset(scrna.list[[sample]], cells = selected_c[[sample]])
+     selected_c[[sample]] <- WhichCells(scrna.list[[sample]], expression = nUMI < q99_nUMI[[sample]])
+     scrna.list[[sample]] <- subset(scrna.list[[sample]], cells = selected_c[[sample]])
 }
 
 # Compute the relative expression of each gene per cell Use sparse matrix

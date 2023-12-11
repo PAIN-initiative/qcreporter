@@ -133,6 +133,38 @@ for(i in 1:length(samples)){
   sample=samples[i]; sample_id=samples[i];
   scrna.list[[sample]]$sample_id <- sample_id
 }
+
+# add sex
+if ("Sex" %in% colnames(metatable)){
+    for(i in 1:length(samples)){
+    sample=samples[i]; sex=Sex[i];
+    scrna.list[[sample]]$sex <- sex
+    }
+}
+
+# add Segment
+if ("Segment" %in% colnames(metatable)){
+    for(i in 1:length(samples)){
+    sample=samples[i]; segment=Segment[i];
+    scrna.list[[sample]]$segment <- segment
+    }
+}
+
+# add Age
+if ("Age" %in% colnames(metatable)){
+    for(i in 1:length(samples)){
+    sample=samples[i]; age=Age[i];
+    scrna.list[[sample]]$age <- age
+    }
+}
+
+# add Assay
+if ("Assay" %in% colnames(metatable)){
+    for(i in 1:length(samples)){
+    sample=samples[i]; assay=Assay[i];
+    scrna.list[[sample]]$assay <- assay
+    }
+}
 ```
 
 [Return to Contents](#rna_seq_sample_top) 

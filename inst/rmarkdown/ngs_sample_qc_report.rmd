@@ -9,8 +9,9 @@ output:
   tables: yes
 params:
   experiment_id: NULL
-  cellbender_dir: NULL            
-  refdir: null           
+  cellbender_dir: NULL          
+  outdir: NULL
+  refdir: NULL           
   projectName: NULL     
   in_method_string: NULL
   in_dir: NULL           

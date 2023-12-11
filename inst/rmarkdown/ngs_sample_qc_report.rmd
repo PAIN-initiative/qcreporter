@@ -134,17 +134,36 @@ Read in the sample key
 ```{r read_key}
 stm("Reading in sample key")
 if (length(grep("https",in_key)) > 0) {
-    ss <- read_sheet(in_key)
-    } else if (length(grep(".xlsx",in_key)) > 0){
-        ss <- import_list(in_key)
-        ss <- ss$MetaTable_expectedCell
-    } else {
-        ss <- read.csv(in_key)
-}
-if ("Final list" %in% colnames(ss)) {
-    ss <- ss %>% filter(ss$"Final list" == 1)
-}
+    sheet_names <- sheet_names(ss = in_key)
+    all_sheets <- list()
+    for (name in sheet_names){
+         all_sheets[[name]] <- read_sheet(in_key, sheet = name)
+    }
+        ss      <- all_sheets$SAMPLE
+        Sample      <- ss_int$'sample ID'
+        Segment     <- ss_int$segment
+        Diagnosis   <- ss_int$diagnosis
+        Treatment   <- ss_int$treatment
+        Tissue      <- ss_int$"tissue type"
+        ss_int      <- all_sheets$ASSAY_snRNAseq
+        Assay       <- ss_int$Assay_shortcode
+        ss          <- as.data.frame(cbind(Sample,Segment,Diagnosis,Tissue,Assay))
+        samples <- unique(ss$Sample)
+        treatments <- ss$Treatment
+        MarkerGenes <- all_sheets$MarkerGenes
+        colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')
+        markers <- MarkerGenes$'marker_gene'
+        if (species == "Homo Sapiens"){
+            markers <- toupper(markers)
+        }
 
+    } else if (length(grep(".xlsx",in_key)) > 0 ){
+        ss <- import_list(in_key)
+        ss <- ss$MetaTable_expectedCell     
+              
+        } else {
+            ss <- read.csv(in_key)
+        }
 df_key <- ss
 has_controls <- any(grepl("Control", df_key$Treatment))  # used to control evaluation of batch control-related code chunks
 ```

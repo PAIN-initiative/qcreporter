@@ -237,7 +237,30 @@ selected_ribo <- WhichCells(data.filt, expression = percent.ribo <= ribo_cutoff)
 data.filt <- subset(data.filt, cells = selected_mito)
 data.filt <- subset(data.filt, cells = selected_ribo)
 # split seurat object
-scrna.list <- SplitObject(data.filt , split.by = "sample_id")
+# Hist nUMI Prefilter
+scrna.list <- SplitObject(data.filt, split.by = "sample_id")
+
+q5_nUMI  <- list()
+q95_nUMI <- list()
+q99_nUMI <- list()
+pdf(paste0(out_dir,"nUMI_hist_plots.pdf"))
+for (sample in samples){
+hist(scrna.list[[sample]]$nUMI, xlab="nUMI", 
+                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")
+q5_nUMI[[sample]] <- quantile(scrna.list[[sample]]$nUMI, 0.05)
+q95_nUMI[[sample]] <- quantile(scrna.list[[sample]]$nUMI, 0.95)
+q99_nUMI[[sample]] <- quantile(scrna.list[[sample]]$nUMI, 0.99)
+}
+dev.off()
+write.csv(q5_nUMI,paste0(out_dir,"q5_nUMI.csv"))
+write.csv(q95_nUMI,paste0(out_dir,"q95_nUMI.csv"))
+write.csv(q99_nUMI,paste0(out_dir,"q99_nUMI.csv"))
+
+selected_c <- list()
+for (sample in samples){
+     selected_c[[sample]]           <- WhichCells(scrna.list[[sample]], expression = nUMI < q99_nUMI[[sample]])
+     scrna.list_prefilter[[sample]] <- subset(scrna.list[[sample]], cells = selected_c[[sample]])
+}
 
 # Compute the relative expression of each gene per cell Use sparse matrix
 # operations, if your dataset is large, doing matrix devisions the regular way
@@ -431,35 +454,6 @@ n_cells_df <- as.data.frame(cbind(samples,NCells))
 pdf(paste0(out_dir,"postfilter_n_cells.pdf"),onefile=TRUE,height=10,width=15)
 ggplot(data = n_cells_df, aes(x = samples,y = as.integer(NCells),fill = samples)) + geom_bar(stat="identity") + geom_text(aes(label=NCells), position=position_dodge(width=0.9), vjust=-0.25) + ggtitle("Number of Cells") 
 mute <- dev.off()
-
-
-# Hist nUMI Prefilter
-scrna.list_prefilter <- SplitObject(scrna.combined_prefilter, split.by = "sample_id")
-q5_prefilter  <- list()
-q95_prefilter <- list()
-q99_prefilter <- list()
-pdf(paste0(out_dir,"Prefilter_nUMI_hist_plots.pdf"))
-for (sample in samples){
-hist(scrna.list_prefilter[[sample]]$nUMI, xlab="nUMI", 
-                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")
-q5_prefilter[[sample]] <- quantile(scrna.list_prefilter[[sample]]$nUMI, 0.05)
-q95_prefilter[[sample]] <- quantile(scrna.list_prefilter[[sample]]$nUMI, 0.95)
-q99_prefilter[[sample]] <- quantile(scrna.list_prefilter[[sample]]$nUMI, 0.99)
-}
-dev.off()
-write.csv(q5_prefilter,paste0(out_dir,"q5_prefilter.csv"))
-write.csv(q95_prefilter,paste0(out_dir,"q95_prefilter.csv"))
-write.csv(q99_prefilter,paste0(out_dir,"q99_prefilter.csv"))
-
-q99_prefilter_median <- q99_prefilter %>% unlist() %>% median()
-
-
-# filter cells nUMI < q99_prefilter_median
-selected_c <- WhichCells(so_postfilter, expression = nUMI < q99_prefilter_median)
-so_postfilter <- subset(so_postfilter, cells = selected_c)
-
-
-
 
 ```
 

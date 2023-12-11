@@ -56,8 +56,20 @@ if (length(grep("https",in_key)) > 0) {
             metatable <- metatable %>% filter(metatable$"Final list" == 1)
         }
         samples <- unique(metatable$Sample)
-        treatments <- metatable$Treatment      
-              
+        treatments <- metatable$Treatment    
+        if ("Segment" %in% colnames(metatable)) {
+        Segment <- metatable$Segment 
+        }
+        if ("Age" %in% colnames(metatable)) {
+        Age <- metatable$Age 
+        }
+        if ("Sex" %in% colnames(metatable)) {
+        Sex <- metatable$Sex 
+        }
+        if ("Assay" %in% colnames(metatable)) {
+        Assay <- metatable$Assay 
+        }
+             
         # Format Marker Genes
         MarkerGenes <- ss$MarkerGenes
         colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')
@@ -73,6 +85,18 @@ if (length(grep("https",in_key)) > 0) {
             }
             samples <- unique(metatable$Sample)
             treatments <- metatable$Treatment      
+            if ("Segment" %in% colnames(metatable)) {
+            Segment <- metatable$Segment 
+            }
+            if ("Age" %in% colnames(metatable)) {
+            Age <- metatable$Age 
+            }
+            if ("Sex" %in% colnames(metatable)) {
+            Sex <- metatable$Sex 
+            }
+            if ("Assay" %in% colnames(metatable)) {
+            Assay <- metatable$Assay 
+            }
                     # Format Marker Genes
             MarkerGenes <- ss$MarkerGenes
             colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')

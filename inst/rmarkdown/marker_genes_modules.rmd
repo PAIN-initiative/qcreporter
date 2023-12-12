@@ -364,7 +364,7 @@ bcmvn       <- list()
 
 
 for (sample in samples){
- sweep.res[[sample]] <- paramSweep_v3(scrna.list[[sample]]) 
+ sweep.res[[sample]] <- paramSweep(scrna.list[[sample]]) 
  sweep.stats[[sample]] <- summarizeSweep(sweep.res[[sample]], GT = FALSE) 
  bcmvn[[sample]] <- find.pK(sweep.stats[[sample]])
 }

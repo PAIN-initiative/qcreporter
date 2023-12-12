@@ -828,7 +828,7 @@ print(res_2 + coord_fixed())
 mute <- dev.off()
 print(res_2 + coord_fixed())
 meta <- harmonized_seurat@meta.data
-Idents(harmonized_seurat) <- resolution
+Idents(harmonized_seurat) <- "SCT_snn_res.1"
 rm(scrna.list)
 ```
 

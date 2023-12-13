@@ -869,6 +869,8 @@ saveRDS(harmonized_seurat, paste0(out_dir, "harmonized_seurat_postfilter.seurat.
 DefaultAssay(scrna.combined) <- "RNA"
 all.genes <- rownames(scrna.combined)
 scrna.combined <- ScaleData(scrna.combined,features = all.genes,verbose = FALSE)
+# New Function in Seurat V5 ??
+scrna.combined <- JoinLayers(scrna.combined)
 #nk.markers <- FindConservedMarkers(scrna.combined, ident.1 = 0, grouping.var = "sample_id", verbose = FALSE)
 # FindAllMarkers
 scrna.markers <- FindAllMarkers(scrna.combined, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25,verbose=FALSE)
@@ -894,6 +896,8 @@ topN <- Extract_Top_Markers(scrna.markers, num_genes = 25, named_vector = FALSE,
 DefaultAssay(harmonized_seurat) <- "RNA"
 all.genes <- rownames(harmonized_seurat)
 harmonized_seurat <- ScaleData(harmonized_seurat,features = all.genes,verbose = FALSE)
+# New Function in Seurat V5 ??
+harmonized_seurat <- JoinLayers(harmonized_seurat)
 #nk.markers <- FindConservedMarkers(harmonized_seurat, ident.1 = 0, grouping.var = "sample_id", verbose = FALSE)
 # FindAllMarkers
 scrna.markers <- FindAllMarkers(harmonized_seurat, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25,verbose=FALSE)

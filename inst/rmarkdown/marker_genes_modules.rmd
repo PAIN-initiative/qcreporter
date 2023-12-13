@@ -386,7 +386,7 @@ for (sample in samples){
 nExp = list()
 for (sample in samples){
     nExp[[sample]] <- round(ncol(scrna.list[[sample]]) * multiplet_rate[[sample]])  # expected doublets
-    scrna.list[[sample]] <- suppressMessages(doubletFinder_v3(scrna.list[[sample]], pN = 0.25, pK = as.integer(pk_value[[sample]]), nExp =     
+    scrna.list[[sample]] <- suppressMessages(doubletFinder(scrna.list[[sample]], pN = 0.25, pK = as.integer(pk_value[[sample]]), nExp =     
 nExp[[sample]], PCs = 1:10))
 }
 

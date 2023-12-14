@@ -62,9 +62,7 @@ quiet_library(future)        # multi-threading for batch umap creation
 quiet_library(future.apply)  # multi-threading for batch umap creation
 quiet_library(rio)
 quiet_library(purrr)
-quiet_library(egg)
 quiet_library(DT)
-quiet_library(SoupX)
 quiet_library(reticulate)
 quiet_library(glmpca)
 quiet_library(viridis)

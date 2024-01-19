@@ -893,34 +893,6 @@ write.table(top50, paste0(out_dir, "FindAllMarkers.clusters.top50.xls"), sep = "
 # Step 6: Top 3 identified genes, feature plot, dotplot
 topN <- Extract_Top_Markers(scrna.markers, num_genes = 25, named_vector = FALSE, make_unique = TRUE, gene_column = "geneSymbol")
 
-DefaultAssay(harmonized_seurat) <- "RNA"
-all.genes <- rownames(harmonized_seurat)
-harmonized_seurat <- ScaleData(harmonized_seurat,features = all.genes,verbose = FALSE)
-# New Function in Seurat V5 ??
-harmonized_seurat <- JoinLayers(harmonized_seurat)
-#nk.markers <- FindConservedMarkers(harmonized_seurat, ident.1 = 0, grouping.var = "sample_id", verbose = FALSE)
-# FindAllMarkers
-scrna.markers <- FindAllMarkers(harmonized_seurat, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25,verbose=FALSE)
-
-names(scrna.markers)[names(scrna.markers) == "gene"] <- "geneSymbol"
-scrna.markers$geneID <- geneTable$geneID[match(scrna.markers$geneSymbol, geneTable$geneSymbol)]
-write.table(scrna.markers, paste0(out_dir,"harmony","/", "FindAllMarkers.clusters.xls"), sep = "\t", row.names = F)
-# top 10
-top10<- scrna.markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_log2FC)
-write.table(top10, paste0(out_dir,"harmony","/", "FindAllMarkers.clusters.top10.xls"), sep = "\t", col.names = NA)
-
-# top 25
-top25 <- scrna.markers %>% group_by(cluster) %>% top_n(n = 25, wt = avg_log2FC)
-write.table(top25, paste0(out_dir,"harmony","/", "FindAllMarkers.clusters.top25.xls"), sep = "\t", col.names = NA)
-
-# top 50
-top50 <- scrna.markers %>% group_by(cluster) %>% top_n(n = 50, wt = avg_log2FC)
-write.table(top50, paste0(out_dir,"harmony","/", "FindAllMarkers.clusters.top50.xls"), sep = "\t", col.names = NA)
-
-# Step 6: Top 3 identified genes, feature plot, dotplot
-topN <- Extract_Top_Markers(scrna.markers, num_genes = 25, named_vector = FALSE, make_unique = TRUE, gene_column = "geneSymbol")
-
-
 ```
 <a  id="mgt"></a> 
 ```{r echo=FALSE,message=FALSE}

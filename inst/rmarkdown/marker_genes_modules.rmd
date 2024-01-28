@@ -240,21 +240,21 @@ data.filt <- subset(data.filt, cells = selected_ribo)
 # Hist nUMI Prefilter
 scrna.list <- SplitObject(data.filt, split.by = "sample_id")
 
-q5_nUMI  <- list()
-q95_nUMI <- list()
-q99_nUMI <- list()
+#q5_nUMI  <- list()
+#q95_nUMI <- list()
+#q99_nUMI <- list()
 pdf(paste0(out_dir,"nUMI_hist_plots.pdf"))
 for (sample in samples){
 hist(scrna.list[[sample]]$nUMI, xlab="nUMI", 
                               ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")
-q5_nUMI[[sample]] <- quantile(scrna.list[[sample]]$nUMI, 0.05)
-q95_nUMI[[sample]] <- quantile(scrna.list[[sample]]$nUMI, 0.95)
-q99_nUMI[[sample]] <- quantile(scrna.list[[sample]]$nUMI, 0.99)
+#q5_nUMI[[sample]] <- quantile(scrna.list[[sample]]$nUMI, 0.05)
+#q95_nUMI[[sample]] <- quantile(scrna.list[[sample]]$nUMI, 0.95)
+#q99_nUMI[[sample]] <- quantile(scrna.list[[sample]]$nUMI, 0.99)
 }
 dev.off()
-write.csv(q5_nUMI,paste0(out_dir,"q5_nUMI.csv"))
-write.csv(q95_nUMI,paste0(out_dir,"q95_nUMI.csv"))
-write.csv(q99_nUMI,paste0(out_dir,"q99_nUMI.csv"))
+#write.csv(q5_nUMI,paste0(out_dir,"q5_nUMI.csv"))
+#write.csv(q95_nUMI,paste0(out_dir,"q95_nUMI.csv"))
+#write.csv(q99_nUMI,paste0(out_dir,"q99_nUMI.csv"))
 
 
 #selected_c <- list()

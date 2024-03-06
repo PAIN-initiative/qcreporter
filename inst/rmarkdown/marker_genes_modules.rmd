@@ -40,7 +40,7 @@ if (length(grep("https",in_key)) > 0) {
         ss_int      <- all_sheets$ASSAY_snRNAseq
         Assay       <- ss_int$Assay_shortcode
         ss          <- as.data.frame(cbind(Sample,Segment,Diagnosis,Tissue,Assay))
-        samples <- unique(ss$Sample)
+        samples <- unique(ss$Sample_ID)
         treatments <- ss$Treatment
         MarkerGenes <- all_sheets$MarkerGenes
         colnames(MarkerGenes) <- c('marker_gene','cell_type','ref')
@@ -55,7 +55,7 @@ if (length(grep("https",in_key)) > 0) {
         if ("Final list" %in% colnames(metatable)) {
             metatable <- metatable %>% filter(metatable$"Final list" == 1)
         }
-        samples <- unique(metatable$Sample)
+        samples <- unique(metatable$Sample_ID)
         treatments <- metatable$Treatment    
         if ("Segment" %in% colnames(metatable)) {
         Segment <- metatable$Segment 
@@ -83,7 +83,7 @@ if (length(grep("https",in_key)) > 0) {
             if ("Final list" %in% colnames(metatable)) {
                 metatable <- metatable %>% filter(metatable$"Final list" == 1)
             }
-            samples <- unique(metatable$Sample)
+            samples <- unique(metatable$Sample_ID)
             treatments <- metatable$Treatment      
             if ("Segment" %in% colnames(metatable)) {
             Segment <- metatable$Segment 

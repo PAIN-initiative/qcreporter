@@ -500,40 +500,40 @@ ggplot(NCellDF, aes(fill=factor(QC_Status,levels=order), y=N_Cells,x=Sample)) +
 scrna.list_prefilter <- SplitObject(scrna.combined_prefilter, split.by = "sample_id")
 
 
-for (sample in samples){
-hist(scrna.list_prefilter[[sample]]$nUMI, xlab="nUMI", 
-                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")
-}
+#for (sample in samples){
+#hist(scrna.list_prefilter[[sample]]$nUMI, xlab="nUMI", 
+#                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, #col="grey80")
+#}
 
 
 # Hist nGene Prefilter
-pdf(paste0(out_dir,"Prefilter_nGene_hist_plots.pdf"))
-for (sample in samples){
-hist(scrna.list_prefilter[[sample]]$nGene, xlab="nGene", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
-}
-dev.off()
+#pdf(paste0(out_dir,"Prefilter_nGene_hist_plots.pdf"))
+#for (sample in samples){
+#hist(scrna.list_prefilter[[sample]]$nGene, xlab="nGene", 
+#                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
+#}
+#dev.off()
 
-for (sample in samples){
-hist(scrna.list_prefilter[[sample]]$nGene, xlab="nGene", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
-}
+#for (sample in samples){
+#hist(scrna.list_prefilter[[sample]]$nGene, xlab="nGene", 
+#                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
+#}
 
 # Hist nUMI Prefilter
-pdf(paste0(out_dir,"Prefilter_mito_hist_plots.pdf"))
-for (sample in samples){
-hist(scrna.list_prefilter[[sample]]$percent.mito, xlab="Mitchondrial Percentage %", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
-}
-dev.off()
+#pdf(paste0(out_dir,"Prefilter_mito_hist_plots.pdf"))
+#for (sample in samples){
+#hist(scrna.list_prefilter[[sample]]$percent.mito, xlab="Mitchondrial Percentage %", 
+#                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
+#}
+#dev.off()
 
 # Hist plot ribo
-pdf(paste0(out_dir,"Prefilter_ribo_hist_plots.pdf"))
-for (sample in samples){
-hist(scrna.list_prefilter[[sample]]$percent.ribo, xlab="Ribosomal proportion (%)", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
-}
-dev.off()
+#pdf(paste0(out_dir,"Prefilter_ribo_hist_plots.pdf"))
+#for (sample in samples){
+#hist(scrna.list_prefilter[[sample]]$percent.ribo, xlab="Ribosomal proportion (%)", 
+#                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
+#}
+#dev.off()
 
 
 # Prefilter
@@ -561,46 +561,46 @@ scrna.list_postfilter <- SplitObject(so_postfilter , split.by = "sample_id")
 
 
 # Hist nUMI Postfilter
-pdf(paste0(out_dir,"Postfilter_nUMI_hist_plots.pdf"))
-for (sample in samples){
-hist(scrna.list_postfilter[[sample]]$nUMI, xlab="nUMI", 
-                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")
-}
-dev.off()
+#pdf(paste0(out_dir,"Postfilter_nUMI_hist_plots.pdf"))
+#for (sample in samples){
+#hist(scrna.list_postfilter[[sample]]$nUMI, xlab="nUMI", 
+#                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, #col="grey80")
+#}
+#dev.off()
 
-for (sample in samples){
-hist(scrna.list_postfilter[[sample]]$nUMI, xlab="nUMI", 
-                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, col="grey80")
-}
+#for (sample in samples){
+#hist(scrna.list_postfilter[[sample]]$nUMI, xlab="nUMI", 
+                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, #col="grey80")
+#}
 
 # Hist nGene Postfilter
-pdf(paste0(out_dir,"Postfilter_nGene_hist_plots.pdf"))
-for (sample in samples){
-hist(scrna.list_postfilter[[sample]]$nGene, xlab="nGene", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
-}
-dev.off()
+#pdf(paste0(out_dir,"Postfilter_nGene_hist_plots.pdf"))
+#for (sample in samples){
+#hist(scrna.list_postfilter[[sample]]$nGene, xlab="nGene", 
+#                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
+#}
+#dev.off()
 
-for (sample in samples){
-hist(scrna.list_postfilter[[sample]]$nGene, xlab="nGene", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
-}
+#for (sample in samples){
+#hist(scrna.list_postfilter[[sample]]$nGene, xlab="nGene", 
+#                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
+#}
 
 # Hist nUMI Postfilter
-pdf(paste0(out_dir,"Postfilter_mito_hist_plots.pdf"))
-for (sample in samples){
-hist(scrna.list_postfilter[[sample]]$percent.mito, xlab="Mitchondrial Percentage %", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
-}
-dev.off()
+#pdf(paste0(out_dir,"Postfilter_mito_hist_plots.pdf"))
+#for (sample in samples){
+#hist(scrna.list_postfilter[[sample]]$percent.mito, xlab="Mitchondrial Percentage %", 
+#                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
+#}
+#dev.off()
 
 # Hist plot ribo
-pdf(paste0(out_dir,"Postfilter_ribo_hist_plots.pdf"))
-for (sample in samples){
-hist(scrna.list_postfilter[[sample]]$percent.ribo, xlab="Ribosomal proportion (%)", 
-                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
-}
-dev.off()
+#pdf(paste0(out_dir,"Postfilter_ribo_hist_plots.pdf"))
+#for (sample in samples){
+#hist(scrna.list_postfilter[[sample]]$percent.ribo, xlab="Ribosomal proportion (%)", 
+#                              ylab="Number of cells", breaks=100, main=sample, col="grey80")
+#}
+#dev.off()
 
 
 plots <- list()

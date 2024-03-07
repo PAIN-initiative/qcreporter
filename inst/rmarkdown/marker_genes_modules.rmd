@@ -570,7 +570,7 @@ scrna.list_postfilter <- SplitObject(so_postfilter , split.by = "sample_id")
 
 #for (sample in samples){
 #hist(scrna.list_postfilter[[sample]]$nUMI, xlab="nUMI", 
-                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, #col="grey80")
+#                              ylab="Number of cells", breaks=seq(0,160000, by= 200),xlim = c(0,14000), main=sample, #col="grey80")
 #}
 
 # Hist nGene Postfilter
